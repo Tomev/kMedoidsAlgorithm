@@ -5,7 +5,6 @@
 #include <iostream>
 #include <algorithm>
 #include <set>
-#include <random>
 
 #include "kMedoidsAlgorithm.h"
 
@@ -14,9 +13,9 @@ kMedoidsAlgorithm::kMedoidsAlgorithm(int numberOfMedoids) : numberOfMedoids(numb
 
 }
 
-bool kMedoidsAlgorithm::canGroupingBePerformed(std::vector<sample>* objects)
+bool kMedoidsAlgorithm::canGroupingBePerformed(std::vector<sample*>* objects)
 {
-  if(objects->size() > numberOfMedoids)
+  if(objects->size() < numberOfMedoids)
   {
     std::cout << "Number of medoids is greater than objects number.\n";
     return false;
@@ -31,19 +30,22 @@ bool kMedoidsAlgorithm::canGroupingBePerformed(std::vector<sample>* objects)
   return true;
 }
 
-void kMedoidsAlgorithm::groupObjects(std::vector<sample> *objects, std::vector<cluster>* target)
+void kMedoidsAlgorithm::groupObjects(std::vector<sample*> *objects, std::vector<cluster>* target)
 {
   if(! canGroupingBePerformed(objects)) return;
 
   clusterObjects(objects);
   selectRandomMedoids();
 
+  assignObjectsToClusters();
 
+  *target = std::vector<cluster>(medoids);
 }
 
-void kMedoidsAlgorithm::clusterObjects(std::vector<sample> *objects)
+void kMedoidsAlgorithm::clusterObjects(std::vector<sample*> *objects)
 {
-  for(sample object : *objects) clusters.push_back(cluster(&object));
+  for(int clusterNumber = 0; clusterNumber < objects->size(); ++clusterNumber)
+    clusters.push_back(cluster(clusterNumber+1, objects->at(clusterNumber)));
 }
 
 void kMedoidsAlgorithm::selectRandomMedoids()
@@ -54,6 +56,44 @@ void kMedoidsAlgorithm::selectRandomMedoids()
   while(medoidsIndexes.size() != numberOfMedoids) medoidsIndexes.insert(rand() % clusters.size());
 
   // Place medoids in proper holder.
-  for(int medoidsIndex : medoidsIndexes) medoids.push_back(&clusters.at(medoidsIndex));
+
+  long medoidNumber = 0;
+
+  for(int medoidsIndex : medoidsIndexes)
+    medoids.push_back(cluster(medoidNumber++, clusters.at(medoidsIndex)));
+}
+
+void kMedoidsAlgorithm::assignObjectsToClusters()
+{
+  for(cluster c : clusters)
+  {
+    if(!isAMedoid(&c))
+    {
+      int closestMedoidIndex = findClosestMedoidIndex(&c);
+
+      medoids.at(closestMedoidIndex).addSubcluster(c);
+    }
+  }
+}
+
+bool kMedoidsAlgorithm::isAMedoid(cluster *c)
+{
+  for(cluster medoid : medoids)
+    if(c->getClustersId() == medoid.getClustersId()) return true;
+
+  return false;
+}
+
+int kMedoidsAlgorithm::findClosestMedoidIndex(cluster *c)
+{
+  int closestMedoidIndex = 0;
+  double minDistance = -1 ;
+
+  for(cluster medoid : medoids)
+  {
+
+  }
+
+  return closestMedoidIndex;
 }
 

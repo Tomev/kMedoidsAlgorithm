@@ -8,13 +8,17 @@
 
 #include "sample.h"
 
+#include <vector>
+
 class objectsDistanceMeasure
 {
   public:
 
     virtual double countObjectsDistance(sample* s1, sample* s2) = 0;
 
-  private:
+  protected:
+
+
 
 
 };

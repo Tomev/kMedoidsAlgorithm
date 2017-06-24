@@ -9,7 +9,13 @@
 
 class gowersDistanceMeasure : public objectsDistanceMeasure
 {
-  double countObjectsDistance(sample* s1, sample* s2);
+  public:
+
+    double countObjectsDistance(sample* s1, sample* s2);
+
+  protected:
+
+    bool canDistanceBeMeasured(sample* s1, sample* s2);
 
 };
 

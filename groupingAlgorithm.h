@@ -11,7 +11,7 @@
 class groupingAlgorithm
 {
   public:
-    virtual void groupObjects(std::vector<sample>* objects, std::vector<cluster>* target) = 0;
+    virtual void groupObjects(std::vector<sample*>* objects, std::vector<cluster>* target) = 0;
 
   protected:
 
