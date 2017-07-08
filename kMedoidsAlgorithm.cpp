@@ -86,7 +86,7 @@ bool kMedoidsAlgorithm::isAMedoid(cluster *c)
 
 int kMedoidsAlgorithm::findClosestMedoidIndex(cluster *c)
 {
-  int closestMedoidIndex = 0;
+  int closestMedoidIndex = -1;
   double minDistance = -1 ;
 
   for(cluster medoid : medoids)
