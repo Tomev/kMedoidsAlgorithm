@@ -5,7 +5,7 @@
 
 class smcCategoricalAttributesDistanceMeasure : public attributesDistanceMeasure
 {
-  double countCategoricalAttributesDistance(string firstAttributeValue, string secondAttributeValue);
+  double countAttributesDistance(string firstAttributeValue, string secondAttributeValue);
 };
 
 
