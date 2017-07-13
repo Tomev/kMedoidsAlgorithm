@@ -12,9 +12,11 @@
 #include <string>
 #include <vector>
 #include <c++/iostream>
+#include <unordered_map>
 
 #include "dataParser.h"
 #include "textDataSample.h"
+#include "attributeData.h"
 
 using namespace std;
 
@@ -23,7 +25,7 @@ class textDataParser : public dataParser
 
   public:
 
-    textDataParser();
+    textDataParser(unordered_map<string, attributeData*> *attributesData);
 
     void parseData(void *target);
     int addDatumToContainer(std::vector<sample*> *container);
@@ -34,7 +36,7 @@ class textDataParser : public dataParser
   protected:
 
     vector<string> *attributesOrder;
-
+    unordered_map<string, attributeData*>* attributesData;
 
 };
 

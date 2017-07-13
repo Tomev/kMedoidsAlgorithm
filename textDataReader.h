@@ -26,12 +26,11 @@ class textDataReader : public dataReader
     void gatherAttributesData(unordered_map<string, attributeData*> *attributesData);
     bool hasMoreData();
 
-
-
   private:
 
     std::ifstream *sourceFile;
     vector<string> *attributesOrder;
+
 };
 
 

@@ -23,10 +23,10 @@ int main()
 
   // Generate samples and gather attributes data
 
-  dataReader* dr = new textDataReader(&sourceFile);
-  dataParser* dp = new textDataParser();
-
   unordered_map<string, attributeData*> attributesData;
+
+  dataReader* dr = new textDataReader(&sourceFile);
+  dataParser* dp = new textDataParser(&attributesData);
 
   dr->gatherAttributesData(&attributesData);
   dp->setAttributesOrder(dr->getAttributesOrder());

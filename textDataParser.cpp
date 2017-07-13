@@ -6,7 +6,8 @@
 
 #include <sstream>
 
-textDataParser::textDataParser()
+textDataParser::textDataParser(unordered_map<string, attributeData*> *attributesData) :
+attributesData(attributesData)
 {
   this->buffer = new std::string();
 }
