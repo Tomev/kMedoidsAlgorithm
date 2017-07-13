@@ -8,10 +8,7 @@
 
 #include "kMedoidsAlgorithm.h"
 
-kMedoidsAlgorithm::kMedoidsAlgorithm(int numberOfMedoids) : numberOfMedoids(numberOfMedoids)
-{
-
-}
+kMedoidsAlgorithm::kMedoidsAlgorithm(int numberOfMedoids) : numberOfMedoids(numberOfMedoids) {}
 
 bool kMedoidsAlgorithm::canGroupingBePerformed(std::vector<sample*>* objects)
 {
@@ -32,12 +29,12 @@ bool kMedoidsAlgorithm::canGroupingBePerformed(std::vector<sample*>* objects)
 
 void kMedoidsAlgorithm::groupObjects(std::vector<sample*> *objects, std::vector<cluster>* target)
 {
-  if(! canGroupingBePerformed(objects)) return;
+  if(!canGroupingBePerformed(objects)) return;
 
   clusterObjects(objects);
   selectRandomMedoids();
 
-  assignObjectsToClusters();
+  //assignObjectsToClusters();
 
   *target = std::vector<cluster>(medoids);
 }

@@ -11,6 +11,11 @@ class categoricalAttributeData : public attributeData
 
     string getType();
     string getName();
+
+  protected:
+
+    string name;
+
 };
 
 

@@ -9,7 +9,7 @@ class attributeData
 {
   public:
 
-    virtual string getName() { return name; }
+    string getName() { return name; }
     virtual string getType() = 0;
 
   protected:

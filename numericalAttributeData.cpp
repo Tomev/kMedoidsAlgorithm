@@ -53,3 +53,4 @@ bool numericalAttributeData::hasAttributeOccurred()
   return occurred;
 }
 
+

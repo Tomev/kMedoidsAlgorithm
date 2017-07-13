@@ -15,22 +15,13 @@
 #include "dataReader.h"
 
 #include <fstream>
-#include <string>
-#include <vector>
-
-struct attributeData
-{
-  std::string attributeName;
-  std::string attributeType;
-};
-
 
 class textDataReader : public dataReader
 {
   public:
     textDataReader(std::ifstream *sourceFile);
     void getNextRawDatum(void *target);
-    void gatherAttributesData(void *attributes);
+    void gatherAttributesData(unordered_map<string, unordered_map<string, attributeData*>> *attributesData);
     bool hasMoreData();
   private:
     std::ifstream *sourceFile;

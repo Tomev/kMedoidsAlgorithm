@@ -18,7 +18,7 @@ class objectsDistanceMeasure
 
   protected:
 
-    numericalAttributeDistanceMeasure* numDistanceMeasure;
+    //numericalAttributeDistanceMeasure* numDistanceMeasure;
 
 
 };

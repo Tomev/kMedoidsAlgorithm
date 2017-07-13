@@ -6,8 +6,10 @@
 #include <sstream>
 
 #include "textDataReader.h"
+#include "numericalAttributeData.h"
+#include "categoricalAttributeData.h"
 
-textDataReader::textDataReader(std::ifstream *sourceFile) : sourceFile(sourceFile){}
+textDataReader::textDataReader(std::ifstream *sourceFile) : sourceFile(sourceFile) {}
 
 void textDataReader::getNextRawDatum(void *target)
 {
@@ -27,36 +29,35 @@ void textDataReader::getNextRawDatum(void *target)
   }
 }
 
-void textDataReader::gatherAttributesData(void *attributesPtr)
+void textDataReader::gatherAttributesData(unordered_map<string, unordered_map<string, attributeData*>> *attributesData)
 {
 
   // This only works for .arff files. Not tested for others.
-  std::string line;
+  string line;
 
-  if(attributesPtr != NULL)
+  if(attributesData != NULL)
   {
-    std::vector<attributeData> *attributes = static_cast<std::vector<attributeData> *>(attributesPtr);
-
     // While line doesn't start with @attribute
     while (line.find("@attribute")) getNextRawDatum(&line);
 
     // While line starts with @attribute
     while (!line.find("@attribute")) {
-      std::istringstream ss(line);
-      std::string substring;
+      istringstream ss(line);
 
-      getline(ss, substring, ' ');
+      string type;
+      string name;
 
-      attributes->push_back(attributeData());
+      // Find name and type of attribute
 
-      getline(ss, substring, ' ');
+      getline(ss, name, ' ');
+      getline(ss, name, ' ');
 
-      attributes->at(attributes->size() - 1).attributeName = substring;
+      getline(ss, type, ' ');
 
-      getline(ss, substring, ' ');
+      // Append attribute to proper place
 
-      if (substring.find("Numeric") == 0) attributes->at(attributes->size() - 1).attributeType = substring;
-      else attributes->at(attributes->size() - 1).attributeType = "Symbolic";
+      if (type.find("numeric") == 0) attributesData->at("numerical")[name] = new numericalAttributeData(name);
+      else attributesData->at("categorical")[name] = new categoricalAttributeData(name);
 
       getNextRawDatum(&line);
     }
