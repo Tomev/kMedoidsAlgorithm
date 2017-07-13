@@ -56,7 +56,7 @@ int main()
   //Tests
 
   //checkAttributesData(&attributesData);
-  checkDistanceMeasurePerformance(&samples, &attributesData);
+  //checkDistanceMeasurePerformance(&samples, &attributesData);
 
   //cout << "Clusters size: " <<  clusters.size() << endl;
 

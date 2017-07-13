@@ -36,7 +36,7 @@ double customObjectsDistanceMeasure::countObjectsDistance(sample *sample1, sampl
     );
   }
 
-  return result;
+  return result / commonAttributes.size();
 }
 
 void customObjectsDistanceMeasure::findCommonAttributes(sample *sample1, sample *sample2)
