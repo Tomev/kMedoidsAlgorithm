@@ -9,10 +9,8 @@ class attributeData
 {
   public:
 
-    string getName() { return name; }
+    virtual string getName() { return name; }
     virtual string getType() = 0;
-
-    void setName(string newName);
 
   protected:
 
