@@ -36,7 +36,6 @@ int main()
   dr->gatherAttributesData(&attributesData);
   dp->setAttributesOrder(dr->getAttributesOrder());
 
-  string line;
   vector<sample*> samples;
   vector<cluster> clusters;
 
@@ -57,8 +56,6 @@ int main()
 
   //checkAttributesData(&attributesData);
   //checkDistanceMeasurePerformance(&samples, &attributesData);
-
-  //cout << "Clusters size: " <<  clusters.size() << endl;
 
   return 0;
 }

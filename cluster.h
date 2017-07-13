@@ -13,6 +13,7 @@
 class cluster
 {
   public:
+
     cluster(long index);
     cluster(long index, sample* object);
     cluster(long index, cluster c);
@@ -21,12 +22,14 @@ class cluster
     std::string getClustersId();
 
     sample* getObject();
+    void getObjects(vector<sample*>* target);
 
     void addSubcluster(cluster subcluster);
 
     bool hasSubcluster(cluster* c);
 
   private:
+
     int index;
     sample* object;
     sample* representative;

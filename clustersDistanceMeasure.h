@@ -1,7 +1,3 @@
-//
-// Created by Tomev on 22.06.2017.
-//
-
 #ifndef K_MEDOIDALGORITHM_CLUSTERSDISTANCEMEASURE_H
 #define K_MEDOIDALGORITHM_CLUSTERSDISTANCEMEASURE_H
 
@@ -12,11 +8,11 @@ class clustersDistanceMeasure
 {
   public:
 
-    virtual double countClustersDistance(cluster *c1, cluster *c2);
+    virtual double countClustersDistance(cluster *cluster1, cluster *cluster2) = 0;
 
-  private:
+  protected:
 
-    objectsDistanceMeasure* measure;
+    objectsDistanceMeasure* objDistanceMeasure;
 
 };
 

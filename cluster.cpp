@@ -24,7 +24,7 @@ cluster::cluster(long index, cluster c) : index(index)
 
 bool cluster::representsObject()
 {
-  return object != NULL;
+  return subclusters.size() == 1;
 }
 
 std::string cluster::getClustersId()
@@ -58,9 +58,25 @@ sample *cluster::getObject()
   return nullptr;
 }
 
+void cluster::getObjects(vector<sample *>* target)
+{
+  if(target == nullptr)
+  {
+    cout << "Target is a null pointer. Cannot return clusters objects.\n";
+    return;
+  }
+
+  // Check if cluster is singular object
+  if(this->representsObject()) target->push_back(this->getObject());
+
+  for(cluster c : subclusters) c.getObjects(target);
+}
+
 void cluster::addSubcluster(cluster subcluster)
 {
   subclusters.push_back(subcluster);
 }
+
+
 
 
