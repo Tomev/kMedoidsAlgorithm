@@ -1,7 +1,3 @@
-//
-// Created by Tomev on 22.06.2017.
-//
-
 #ifndef K_MEDOIDALGORITHM_CLUSTER_H
 #define K_MEDOIDALGORITHM_CLUSTER_H
 
@@ -16,7 +12,6 @@ class cluster
 
     cluster(long index);
     cluster(long index, sample* object);
-    cluster(long index, cluster c);
 
     bool representsObject();
     std::string getClustersId();

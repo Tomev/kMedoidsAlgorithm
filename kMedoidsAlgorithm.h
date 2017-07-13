@@ -29,8 +29,9 @@ class kMedoidsAlgorithm : public groupingAlgorithm
     void clusterObjects(std::vector<sample*> *objects);
     void selectRandomMedoids();
     double countCost(vector<cluster> *potentialMedoids);
-      bool isAMedoid(cluster* c);
+      bool isMedoid(cluster* c, vector<cluster> *medoids);
       int findClosestMedoidIndex(cluster *c, vector<cluster>* potentialMedoids);
+    void findPotentialBestMedoidConfiguration(vector<cluster> *potentialBestMedoids, double minCost);
 };
 
 

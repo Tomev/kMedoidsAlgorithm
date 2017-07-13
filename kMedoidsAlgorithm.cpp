@@ -37,7 +37,22 @@ void kMedoidsAlgorithm::groupObjects(std::vector<sample*> *objects, std::vector<
 
   double lowestCost = countCost(&medoids);
 
-  cout << lowestCost;
+  vector<cluster> potentialBestMedoids;
+
+  double potentialLowestCost;
+
+  while(true)
+  {
+    findPotentialBestMedoidConfiguration(&potentialBestMedoids, lowestCost);
+    potentialLowestCost = countCost(&potentialBestMedoids);
+
+    if(potentialLowestCost < lowestCost)
+    {
+      lowestCost = potentialLowestCost;
+      medoids = potentialBestMedoids;
+    }
+    else break;
+  }
 
   *target = std::vector<cluster>(medoids);
 }
@@ -55,12 +70,11 @@ void kMedoidsAlgorithm::selectRandomMedoids()
   // Randomize medoid indexes until required number is achieved.
   while(medoidsIndexes.size() != numberOfMedoids) medoidsIndexes.insert(rand() % clusters.size());
 
-  // Place medoids in proper holder.
-
-  long medoidNumber = 0;
-
   for(int medoidsIndex : medoidsIndexes)
-    medoids.push_back(cluster(medoidNumber++, clusters.at(medoidsIndex)));
+  {
+    cluster c = clusters.at(medoidsIndex);
+    medoids.push_back(c);
+  }
 }
 
 double kMedoidsAlgorithm::countCost(vector<cluster> *potentialMedoids)
@@ -69,7 +83,7 @@ double kMedoidsAlgorithm::countCost(vector<cluster> *potentialMedoids)
 
   for(cluster c : clusters)
   {
-    if(!isAMedoid(&c))
+    if(!isMedoid(&c, potentialMedoids))
     {
       int closestMedoidIndex = findClosestMedoidIndex(&c, potentialMedoids);
 
@@ -80,9 +94,9 @@ double kMedoidsAlgorithm::countCost(vector<cluster> *potentialMedoids)
   return cost;
 }
 
-bool kMedoidsAlgorithm::isAMedoid(cluster *c)
+bool kMedoidsAlgorithm::isMedoid(cluster *c, vector<cluster>* medoids)
 {
-  for(cluster medoid : medoids)
+  for(cluster medoid : *medoids)
     if(c->getClustersId() == medoid.getClustersId()) return true;
 
   return false;
@@ -105,6 +119,43 @@ int kMedoidsAlgorithm::findClosestMedoidIndex(cluster *c, vector<cluster>* poten
   }
 
   return closestMedoidIndex;
+}
+
+void kMedoidsAlgorithm::findPotentialBestMedoidConfiguration(vector<cluster> *potentialBestMedoids, double minCost)
+{
+  double minimalCost = minCost, potentialMinimalCost;
+  vector<cluster> currentBestConfiguration = medoids;
+
+  // For each medoid
+  for(int medoidIndex = 0; medoidIndex < medoids.size(); ++medoidIndex)
+  {
+    cout << "Medoid index: " << medoidIndex << endl;
+
+    // Exclude this medoid from medoids list
+    *potentialBestMedoids = medoids;
+    potentialBestMedoids->erase(potentialBestMedoids->begin()+medoidIndex);
+
+    // Substitute missing medoid with each non-medoid cluster and count cost
+    for(cluster c : clusters)
+    {
+      if (!isMedoid(&c, &medoids)) {
+        potentialBestMedoids->push_back(c);
+        potentialMinimalCost = countCost(potentialBestMedoids);
+
+        if (potentialMinimalCost < minimalCost) {
+          minimalCost = potentialMinimalCost;
+          cout << minimalCost << endl;
+          currentBestConfiguration.clear();
+          currentBestConfiguration = *potentialBestMedoids;
+        }
+
+        potentialBestMedoids->pop_back();
+
+      }
+    }
+  }
+
+  *potentialBestMedoids = currentBestConfiguration;
 }
 
 

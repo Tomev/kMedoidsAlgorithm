@@ -1,7 +1,3 @@
-//
-// Created by Tomev on 22.06.2017.
-//
-
 #include <c++/clocale>
 #include <c++/iostream>
 
@@ -17,12 +13,6 @@ cluster::cluster(long index, sample *object) : index(index), object(object)
 
 }
 
-cluster::cluster(long index, cluster c) : index(index)
-{
-  object = NULL;
-  subclusters.push_back(c);
-}
-
 bool cluster::representsObject()
 {
   return object != NULL;
@@ -35,7 +25,7 @@ std::string cluster::getClustersId()
   if(this->representsObject()) id = "O"; // For "object"
   else id = "C"; // For "cluster"
 
-  id += index;
+  id +=  to_string(index);
 
   return id;
 }

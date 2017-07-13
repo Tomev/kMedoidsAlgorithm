@@ -25,7 +25,11 @@ int main()
   // Initialize time-dependent random seed
   srand (time(NULL));
 
+  // Get source file
   ifstream sourceFile("D:\\Dysk Google\\Data Streams\\sensor.arff");
+
+  // Initialize timer
+  clock_t begin = clock();
 
   // Generate samples and gather attributes data
 
@@ -49,7 +53,6 @@ int main()
 
   // Group objects
 
-
   attributesDistanceMeasure* ndm = new gowersNumericalAttributesDistanceMeasure(&attributesData);
   attributesDistanceMeasure* cdm = new smcCategoricalAttributesDistanceMeasure();
   objectsDistanceMeasure* odm = new customObjectsDistanceMeasure(cdm, ndm, &attributesData);
@@ -62,6 +65,12 @@ int main()
 
   //checkAttributesData(&attributesData);
   //checkDistanceMeasurePerformance(&samples, &attributesData);
+
+  clock_t end = clock();
+
+  double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+  cout << "Medoids found in " << elapsed_secs << " seconds.";
 
   return 0;
 }
