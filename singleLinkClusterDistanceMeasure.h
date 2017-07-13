@@ -14,7 +14,7 @@ class singleLinkClusterDistanceMeasure : public clustersDistanceMeasure
 
   protected:
 
-    double findLowestDistance(vector<sample*> firstClusterObjects, vector<sample*> secondClusterObjects);
+    double findLowestDistance(vector<sample*> *firstClusterObjects, vector<sample*> *secondClusterObjects);
 };
 
 

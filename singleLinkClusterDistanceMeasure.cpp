@@ -1,7 +1,7 @@
 #include <iostream>
 #include "singleLinkClusterDistanceMeasure.h"
 
-singleLinkClusterDistanceMeasure::singleLinkClusterDistanceMeasure(objectsDistanceMeasure *objectsDistanceMeasure)
+singleLinkClusterDistanceMeasure::singleLinkClusterDistanceMeasure(objectsDistanceMeasure *objDistanceMeasure)
 {
   this->objDistanceMeasure = objDistanceMeasure;
 }
@@ -15,20 +15,20 @@ double singleLinkClusterDistanceMeasure::countClustersDistance(cluster *cluster1
   cluster1->getObjects(&firstClusterObjects);
   cluster2->getObjects(&secondClusterObjects);
 
-  double result = findLowestDistance(firstClusterObjects, secondClusterObjects);
+  double result = findLowestDistance(&firstClusterObjects, &secondClusterObjects);
 
   return result;
 }
 
 double singleLinkClusterDistanceMeasure::findLowestDistance(
-  vector<sample *> firstClusterObjects, vector<sample *> secondClusterObjects)
+  vector<sample *>* firstClusterObjects, vector<sample *>* secondClusterObjects)
 {
   // Ensure that distance is normalized to [0,1]
   double minDistance = 1, distance;
 
-  for(sample* firstClusterObject : firstClusterObjects)
+  for(sample* firstClusterObject : *firstClusterObjects)
   {
-    for(sample* secondClusterObject : secondClusterObjects)
+    for(sample* secondClusterObject : *secondClusterObjects)
     {
       distance = objDistanceMeasure->countObjectsDistance(firstClusterObject, secondClusterObject);
 

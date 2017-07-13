@@ -7,19 +7,20 @@
 
 #include "groupingAlgorithm.h"
 #include "objectsDistanceMeasure.h"
+#include "clustersDistanceMeasure.h"
 
 class kMedoidsAlgorithm : public groupingAlgorithm
 {
   public:
 
-    kMedoidsAlgorithm(int numberOfMedoids);
+    kMedoidsAlgorithm(int numberOfMedoids, clustersDistanceMeasure* clusDistanceMeasure);
     void groupObjects(std::vector<sample*>* objects, std::vector<cluster>* target);
 
-  private:
+  protected:
 
     int numberOfMedoids = 1;
 
-    objectsDistanceMeasure* distanceMeasure;
+    clustersDistanceMeasure* clusDistanceMeasure;
 
     std::vector<cluster> clusters;
     std::vector<cluster> medoids;
@@ -27,9 +28,9 @@ class kMedoidsAlgorithm : public groupingAlgorithm
     bool canGroupingBePerformed(std::vector<sample*>* objects);
     void clusterObjects(std::vector<sample*> *objects);
     void selectRandomMedoids();
-    void assignObjectsToClusters();
+    double countCost(vector<cluster> *potentialMedoids);
       bool isAMedoid(cluster* c);
-      int findClosestMedoidIndex(cluster *c);
+      int findClosestMedoidIndex(cluster *c, vector<cluster>* potentialMedoids);
 };
 
 

@@ -8,7 +8,8 @@
 
 #include "kMedoidsAlgorithm.h"
 
-kMedoidsAlgorithm::kMedoidsAlgorithm(int numberOfMedoids) : numberOfMedoids(numberOfMedoids) {}
+kMedoidsAlgorithm::kMedoidsAlgorithm(int numberOfMedoids, clustersDistanceMeasure* clusDistanceMeasure) :
+  numberOfMedoids(numberOfMedoids), clusDistanceMeasure(clusDistanceMeasure) {}
 
 bool kMedoidsAlgorithm::canGroupingBePerformed(std::vector<sample*>* objects)
 {
@@ -34,7 +35,9 @@ void kMedoidsAlgorithm::groupObjects(std::vector<sample*> *objects, std::vector<
   clusterObjects(objects);
   selectRandomMedoids();
 
-  //assignObjectsToClusters();
+  double lowestCost = countCost(&medoids);
+
+  cout << lowestCost;
 
   *target = std::vector<cluster>(medoids);
 }
@@ -60,17 +63,21 @@ void kMedoidsAlgorithm::selectRandomMedoids()
     medoids.push_back(cluster(medoidNumber++, clusters.at(medoidsIndex)));
 }
 
-void kMedoidsAlgorithm::assignObjectsToClusters()
+double kMedoidsAlgorithm::countCost(vector<cluster> *potentialMedoids)
 {
+  double cost = 0;
+
   for(cluster c : clusters)
   {
     if(!isAMedoid(&c))
     {
-      int closestMedoidIndex = findClosestMedoidIndex(&c);
+      int closestMedoidIndex = findClosestMedoidIndex(&c, potentialMedoids);
 
-      medoids.at(closestMedoidIndex).addSubcluster(c);
+      cost += clusDistanceMeasure->countClustersDistance(&c, &(potentialMedoids->at(closestMedoidIndex)));
     }
   }
+
+  return cost;
 }
 
 bool kMedoidsAlgorithm::isAMedoid(cluster *c)
@@ -81,16 +88,23 @@ bool kMedoidsAlgorithm::isAMedoid(cluster *c)
   return false;
 }
 
-int kMedoidsAlgorithm::findClosestMedoidIndex(cluster *c)
+int kMedoidsAlgorithm::findClosestMedoidIndex(cluster *c, vector<cluster>* potentialMedoids)
 {
-  int closestMedoidIndex = -1;
-  double minDistance = -1 ;
+  int closestMedoidIndex = 0;
+  double minDistance = clusDistanceMeasure->countClustersDistance(&(potentialMedoids->at(0)), c), distance;
 
-  for(cluster medoid : medoids)
+  for(int medoidIndex = 1; medoidIndex < potentialMedoids->size(); ++medoidIndex)
   {
+    distance = clusDistanceMeasure->countClustersDistance(&(potentialMedoids->at(medoidIndex)), c);
 
+    if(distance < minDistance)
+    {
+      minDistance = distance;
+      closestMedoidIndex = medoidIndex;
+    }
   }
 
   return closestMedoidIndex;
 }
+
 

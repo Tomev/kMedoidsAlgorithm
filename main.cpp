@@ -12,6 +12,7 @@
 #include "smcCategoricalAttributesDistanceMeasure.h"
 #include "gowersNumericalAttributesDistanceMeasure.h"
 #include "customObjectsDistanceMeasure.h"
+#include "singleLinkClusterDistanceMeasure.h"
 
 // Tests
 void checkAttributesData(unordered_map<string, attributeData*> *attributesData);
@@ -48,7 +49,12 @@ int main()
 
   // Group objects
 
-  groupingAlgorithm* a = new kMedoidsAlgorithm(10);
+
+  attributesDistanceMeasure* ndm = new gowersNumericalAttributesDistanceMeasure(&attributesData);
+  attributesDistanceMeasure* cdm = new smcCategoricalAttributesDistanceMeasure();
+  objectsDistanceMeasure* odm = new customObjectsDistanceMeasure(cdm, ndm, &attributesData);
+  clustersDistanceMeasure* cludm = new singleLinkClusterDistanceMeasure(odm);
+  groupingAlgorithm* a = new kMedoidsAlgorithm(10, cludm);
 
   a->groupObjects(&samples, &clusters);
 

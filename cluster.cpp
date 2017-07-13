@@ -19,12 +19,13 @@ cluster::cluster(long index, sample *object) : index(index), object(object)
 
 cluster::cluster(long index, cluster c) : index(index)
 {
+  object = NULL;
   subclusters.push_back(c);
 }
 
 bool cluster::representsObject()
 {
-  return subclusters.size() == 1;
+  return object != NULL;
 }
 
 std::string cluster::getClustersId()
@@ -67,7 +68,11 @@ void cluster::getObjects(vector<sample *>* target)
   }
 
   // Check if cluster is singular object
-  if(this->representsObject()) target->push_back(this->getObject());
+  if(this->representsObject())
+  {
+    target->push_back(this->getObject());
+    return;
+  }
 
   for(cluster c : subclusters) c.getObjects(target);
 }

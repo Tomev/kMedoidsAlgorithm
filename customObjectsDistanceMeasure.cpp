@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <iostream>
 #include "customObjectsDistanceMeasure.h"
 
 customObjectsDistanceMeasure::customObjectsDistanceMeasure(
@@ -15,8 +16,8 @@ double customObjectsDistanceMeasure::countObjectsDistance(sample *sample1, sampl
 {
   findCommonAttributes(sample1, sample2);
 
-  // If there are no common attributes return -1.
-  if(commonAttributes.size() == 0) return -1.0;
+  // If there are no common attributes return 1 (maximal normalized possible distance).
+  if(commonAttributes.size() == 0) return 1;
 
   double result = 0.0;
   attributesDistanceMeasure* currentMeasure;
