@@ -3,10 +3,12 @@
 
 customObjectsDistanceMeasure::customObjectsDistanceMeasure(
   attributesDistanceMeasure *categoricalAttributesDistanceMeasure,
-  attributesDistanceMeasure *numericalAttributesDistanceMeasure)
+  attributesDistanceMeasure *numericalAttributesDistanceMeasure,
+  unordered_map<string, attributeData*> *attributesData)
 {
   this->categoricalAttributesDistanceMeasure = categoricalAttributesDistanceMeasure;
   this->numericalAttributesDistanceMeasure = numericalAttributesDistanceMeasure;
+  this->attributesData = attributesData;
 }
 
 double customObjectsDistanceMeasure::countObjectsDistance(sample *sample1, sample *sample2)

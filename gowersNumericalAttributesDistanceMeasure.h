@@ -8,11 +8,12 @@
 
 class gowersNumericalAttributesDistanceMeasure : public attributesDistanceMeasure
 {
+  public:
     gowersNumericalAttributesDistanceMeasure(unordered_map<string, attributeData*> *attributesData);
 
     double countAttributesDistance(string firstAttributeValue, string secondAttributeValue);
 
-  private:
+  protected:
 
     unordered_map<string, numericalAttributeData*> numericalAttributesData;
 };

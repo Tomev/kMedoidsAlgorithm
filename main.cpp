@@ -9,9 +9,13 @@
 #include "groupingAlgorithm.h"
 #include "kMedoidsAlgorithm.h"
 #include "numericalAttributeData.h"
+#include "smcCategoricalAttributesDistanceMeasure.h"
+#include "gowersNumericalAttributesDistanceMeasure.h"
+#include "customObjectsDistanceMeasure.h"
 
 // Tests
 void checkAttributesData(unordered_map<string, attributeData*> *attributesData);
+void checkDistanceMeasurePerformance(vector<sample*> *samples, unordered_map<string, attributeData*> *attributesData);
 
 using namespace std;
 
@@ -52,6 +56,7 @@ int main()
   //Tests
 
   //checkAttributesData(&attributesData);
+  checkDistanceMeasurePerformance(&samples, &attributesData);
 
   //cout << "Clusters size: " <<  clusters.size() << endl;
 
@@ -75,4 +80,17 @@ void checkAttributesData(unordered_map<string, attributeData*> *attributesData)
   numericalAttributeData *numAttribute = static_cast<numericalAttributeData*>(attributesData->at("rcdminutes"));
 
   cout << "Min: " << numAttribute->getMinimalValue() << ", Max: " << numAttribute->getMaximalValue() << endl;
+}
+
+void checkDistanceMeasurePerformance(vector<sample*> *samples, unordered_map<string, attributeData*> *attributesData)
+{
+  attributesDistanceMeasure* ndm = new gowersNumericalAttributesDistanceMeasure(attributesData);
+  attributesDistanceMeasure* cdm = new smcCategoricalAttributesDistanceMeasure();
+
+  objectsDistanceMeasure* dm = new customObjectsDistanceMeasure(cdm, ndm, attributesData);
+
+  cout << dm->countObjectsDistance(samples->at(0), samples->at(0)) << endl;
+  cout << dm->countObjectsDistance(samples->at(1), samples->at(1)) << endl;
+  cout << dm->countObjectsDistance(samples->at(0), samples->at(1)) << endl;
+  cout << dm->countObjectsDistance(samples->at(1), samples->at(0)) << endl;
 }
