@@ -35,3 +35,8 @@ void textDataParser::writeDatumOnPosition(std::vector<sample*> *container, int p
 {
   parseData(container->at(position));
 }
+
+void textDataParser::setAttributesOrder(vector<string> *attributesOrder)
+{
+  this->attributesOrder = attributesOrder;
+}

@@ -16,6 +16,8 @@
 #include "dataParser.h"
 #include "textDataSample.h"
 
+using namespace std;
+
 class textDataParser : public dataParser
 {
 
@@ -26,6 +28,14 @@ class textDataParser : public dataParser
     void parseData(void *target);
     int addDatumToContainer(std::vector<sample*> *container);
     void writeDatumOnPosition(std::vector<sample*> *container, int position);
+
+    void setAttributesOrder(vector<string> *attributesOrder);
+
+  protected:
+
+    vector<string> *attributesOrder;
+
+
 };
 
 

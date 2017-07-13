@@ -53,7 +53,6 @@ void textDataReader::gatherAttributesData(unordered_map<string, unordered_map<st
 
       getline(ss, name, ' ');
       getline(ss, name, ' ');
-
       getline(ss, type, ' ');
 
       // Append attribute to proper place
@@ -77,6 +76,10 @@ void textDataReader::gatherAttributesData(unordered_map<string, unordered_map<st
 bool textDataReader::hasMoreData()
 {
   return !sourceFile->eof();
+}
+
+vector<string> *textDataReader::getAttributesOrder() {
+  return this->attributesOrder;
 }
 
 
