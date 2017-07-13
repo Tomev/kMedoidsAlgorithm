@@ -53,4 +53,9 @@ bool numericalAttributeData::hasAttributeOccurred()
   return occurred;
 }
 
+void numericalAttributeData::attributeOccured()
+{
+  this->occurred = true;
+}
+
 

@@ -38,6 +38,8 @@ class textDataParser : public dataParser
     vector<string> *attributesOrder;
     unordered_map<string, attributeData*>* attributesData;
 
+    void updateAttributesData(textDataSample *newSample);
+
 };
 
 

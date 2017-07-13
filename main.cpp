@@ -8,6 +8,7 @@
 #include "textDataParser.h"
 #include "groupingAlgorithm.h"
 #include "kMedoidsAlgorithm.h"
+#include "numericalAttributeData.h"
 
 // Tests
 void checkAttributesData(unordered_map<string, attributeData*> *attributesData);
@@ -50,7 +51,7 @@ int main()
 
   //Tests
 
-  //checkAttributesData(&attributesData);
+  checkAttributesData(&attributesData);
 
   cout << "Clusters size: " <<  clusters.size() << endl;
 
@@ -70,4 +71,8 @@ void checkAttributesData(unordered_map<string, attributeData*> *attributesData)
   cout << "Attributes:\n";
 
   for(string attributeName : keys) cout << attributeName << endl;
+
+  numericalAttributeData *numAttribute = static_cast<numericalAttributeData*>(attributesData->at("rcdminutes"));
+
+  cout << "Min: " << numAttribute->getMinimalValue() << ", Max: " << numAttribute->getMaximalValue() << endl;
 }

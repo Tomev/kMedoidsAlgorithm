@@ -3,6 +3,7 @@
 //
 
 #include "textDataParser.h"
+#include "numericalAttributeData.h"
 
 #include <sstream>
 
@@ -25,6 +26,26 @@ void textDataParser::parseData(void *target)
   int attributeIndex = 0;
 
   while(getline(ss, value, ',')) sampleHolder->attributesValues[attributesOrder->at(attributeIndex++)] = value;
+
+  updateAttributesData(sampleHolder);
+}
+
+void textDataParser::updateAttributesData(textDataSample *newSample)
+{
+  for(auto kv : newSample->attributesValues)
+  {
+    // For now only consider numerical data
+    if(attributesData->at(kv.first)->getType() == "numerical")
+    {
+      numericalAttributeData *numAttribute = static_cast<numericalAttributeData*>(attributesData->at(kv.first));
+      double value = stod(kv.second);
+
+      numAttribute->setMaximalValue(value);
+      numAttribute->setMinimalValue(value);
+
+      numAttribute->attributeOccured();
+    }
+  }
 }
 
 int textDataParser::addDatumToContainer(std::vector<sample*> *container)
@@ -43,3 +64,5 @@ void textDataParser::setAttributesOrder(vector<string> *attributesOrder)
 {
   this->attributesOrder = attributesOrder;
 }
+
+
