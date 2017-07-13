@@ -5,16 +5,18 @@
 #ifndef MEDOIDSTORINGALGORITHM_TEXTDATASAMPLE_H
 #define MEDOIDSTORINGALGORITHM_TEXTDATASAMPLE_H
 
-#include <vector>
 #include <string>
 #include <iostream>
+#include <unordered_map>
 
 #include "sample.h"
+
+using namespace std;
 
 class textDataSample : public sample
 {
   public:
-    std::vector<std::string> values;
+    unordered_map<string, string> attributesValues;
     void print();
 };
 

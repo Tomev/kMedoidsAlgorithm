@@ -6,12 +6,7 @@
 
 void textDataSample::print()
 {
-    std::cout << "Data: ";
+    std::cout << "Data: \n";
 
-    for(int i = 0; i < values.size(); ++i)
-    {
-      std::cout << values.at(i) << ", ";
-    }
-
-    std::cout << std::endl;
+    for(auto kv : attributesValues ) cout << kv.first << ": " << kv.second << endl;
 }

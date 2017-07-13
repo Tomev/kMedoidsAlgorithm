@@ -19,9 +19,11 @@ void textDataParser::parseData(void *target)
   std::istringstream ss(*line);
   std::string value;
 
-  sampleHolder->values.clear();
+  sampleHolder->attributesValues.clear();
 
-  while(getline(ss, value, ',')) sampleHolder->values.push_back(value);
+  int attributeIndex = 0;
+
+  while(getline(ss, value, ',')) sampleHolder->attributesValues[attributesOrder->at(attributeIndex++)] = value;
 }
 
 int textDataParser::addDatumToContainer(std::vector<sample*> *container)

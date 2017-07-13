@@ -35,7 +35,6 @@ int main()
   vector<sample*> samples;
   vector<cluster> clusters;
 
-
   for(int i = 0; i < 1000; ++i)
   {
     dr->getNextRawDatum(dp->buffer);

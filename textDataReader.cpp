@@ -69,8 +69,6 @@ void textDataReader::gatherAttributesData(unordered_map<string, unordered_map<st
   // If pointer was null, then only prepare for data reading.
 
   while(line.find("@data")) getNextRawDatum(&line);
-  getNextRawDatum(&line);
-
 }
 
 bool textDataReader::hasMoreData()
