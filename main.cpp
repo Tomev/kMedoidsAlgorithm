@@ -53,7 +53,7 @@ int main()
 
   checkAttributesData(&attributesData);
 
-  cout << "Clusters size: " <<  clusters.size() << endl;
+  //cout << "Clusters size: " <<  clusters.size() << endl;
 
   return 0;
 }

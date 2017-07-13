@@ -3,5 +3,5 @@ project(k_medoidAlgorithm)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.cpp dataParser.h dataReader.h textDataParser.cpp textDataReader.cpp textDataParser.h textDataReader.h textDataSample.cpp textDataSample.h sample.h cluster.cpp cluster.h groupingAlgorithm.h kMedoidsAlgorithm.cpp kMedoidsAlgorithm.h objectsDistanceMeasure.h clustersDistanceMeasure.h gowersDistanceMeasure.cpp gowersDistanceMeasure.h numericalAttributesDistanceMeasure.h attributeData.h numericalAttributeData.cpp numericalAttributeData.h categoricalAttributeData.cpp categoricalAttributeData.h)
+set(SOURCE_FILES main.cpp dataParser.h dataReader.h textDataParser.cpp textDataReader.cpp textDataParser.h textDataReader.h textDataSample.cpp textDataSample.h sample.h cluster.cpp cluster.h groupingAlgorithm.h kMedoidsAlgorithm.cpp kMedoidsAlgorithm.h objectsDistanceMeasure.h clustersDistanceMeasure.h gowersDistanceMeasure.cpp gowersDistanceMeasure.h numericalAttributesDistanceMeasure.h attributeData.h numericalAttributeData.cpp numericalAttributeData.h categoricalAttributeData.cpp categoricalAttributeData.h gowersNumericalAttributesDistanceMeasure.cpp gowersNumericalAttributesDistanceMeasure.h)
 add_executable(k_medoidAlgorithm ${SOURCE_FILES})
