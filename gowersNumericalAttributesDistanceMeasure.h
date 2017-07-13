@@ -4,13 +4,13 @@
 #include <unordered_map>
 
 #include "numericalAttributeData.h"
-#include "numericalAttributesDistanceMeasure.h"
+#include "attributesDistanceMeasure.h"
 
-class gowersNumericalAttributesDistanceMeasure : numericalAttributesDistanceMeasure
+class gowersNumericalAttributesDistanceMeasure : public attributesDistanceMeasure
 {
     gowersNumericalAttributesDistanceMeasure(unordered_map<string, attributeData*> *attributesData);
 
-    double countNumericalAttributesDistance(double firstAttributeValue, double secondAttributeValue);
+    double countAttributesDistance(string firstAttributeValue, string secondAttributeValue);
 
   private:
 

@@ -12,14 +12,14 @@ gowersNumericalAttributesDistanceMeasure::gowersNumericalAttributesDistanceMeasu
   }
 }
 
-double gowersNumericalAttributesDistanceMeasure::countNumericalAttributesDistance
-  (double firstAttributeValue, double secondAttributeValue)
+double gowersNumericalAttributesDistanceMeasure::countAttributesDistance
+  (string firstAttributeValue, string secondAttributeValue)
 {
   // Check if minimal and maximal values for this attribute are equal. If so distance is 0.
   if(numericalAttributesData.at(currentAttributeName)->getMinMaxDifference() <= 1e-5) return 0;
 
   // Otherwise count and return Gowers distance
-  double result = fabs(firstAttributeValue - secondAttributeValue);
+  double result = fabs(stod(firstAttributeValue) - stod(secondAttributeValue));
   result /= numericalAttributesData.at(currentAttributeName)->getMinMaxDifference();
 
   return result;
