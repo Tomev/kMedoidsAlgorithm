@@ -51,7 +51,7 @@ int main()
 
   //Tests
 
-  checkAttributesData(&attributesData);
+  //checkAttributesData(&attributesData);
 
   //cout << "Clusters size: " <<  clusters.size() << endl;
 

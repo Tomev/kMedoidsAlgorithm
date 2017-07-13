@@ -1,0 +1,12 @@
+#ifndef K_MEDOIDALGORITHM_SMCCATEGORICALATTRIBUTESDISTANCEMEASURE_H
+#define K_MEDOIDALGORITHM_SMCCATEGORICALATTRIBUTESDISTANCEMEASURE_H
+
+#include "categoricalAttributesDistanceMeasure.h"
+
+class smcCategoricalAttributesDistanceMeasure : public categoricalAttributesDistanceMeasure
+{
+  double countCategoricalAttributesDistance(string firstAttributeValue, string secondAttributeValue);
+};
+
+
+#endif //K_MEDOIDALGORITHM_SMCCATEGORICALATTRIBUTESDISTANCEMEASURE_H
