@@ -35,6 +35,8 @@ void textDataReader::gatherAttributesData(unordered_map<string, unordered_map<st
   // This only works for .arff files. Not tested for others.
   string line;
 
+  attributesOrder = new vector<string>();
+
   if(attributesData != NULL)
   {
     // While line doesn't start with @attribute
@@ -58,6 +60,8 @@ void textDataReader::gatherAttributesData(unordered_map<string, unordered_map<st
 
       if (type.find("numeric") == 0) attributesData->at("numerical")[name] = new numericalAttributeData(name);
       else attributesData->at("categorical")[name] = new categoricalAttributeData(name);
+
+      attributesOrder->push_back(name);
 
       getNextRawDatum(&line);
     }

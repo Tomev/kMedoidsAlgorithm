@@ -9,6 +9,7 @@
 #include "groupingAlgorithm.h"
 #include "kMedoidsAlgorithm.h"
 
+// Tests
 void checkAttributesData(unordered_map<string, unordered_map<string, attributeData*>> *attributesData);
 
 using namespace std;
