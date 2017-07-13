@@ -10,7 +10,7 @@
 #include "kMedoidsAlgorithm.h"
 
 // Tests
-void checkAttributesData(unordered_map<string, unordered_map<string, attributeData*>> *attributesData);
+void checkAttributesData(unordered_map<string, attributeData*> *attributesData);
 
 using namespace std;
 
@@ -21,12 +21,12 @@ int main()
 
   ifstream sourceFile("D:\\Dysk Google\\Data Streams\\sensor.arff");
 
+  // Generate samples and gather attributes data
+
   dataReader* dr = new textDataReader(&sourceFile);
   dataParser* dp = new textDataParser();
 
-  unordered_map<string, unordered_map<string, attributeData*>> attributesData;
-  attributesData["numerical"] = unordered_map<string, attributeData*>();
-  attributesData["categorical"] = unordered_map<string, attributeData*>();
+  unordered_map<string, attributeData*> attributesData;
 
   dr->gatherAttributesData(&attributesData);
   dp->setAttributesOrder(dr->getAttributesOrder());
@@ -42,9 +42,13 @@ int main()
     dp->parseData(samples.back());
   }
 
+  // Group objects
+
   groupingAlgorithm* a = new kMedoidsAlgorithm(10);
 
   a->groupObjects(&samples, &clusters);
+
+  //Tests
 
   //checkAttributesData(&attributesData);
 
@@ -53,29 +57,17 @@ int main()
   return 0;
 }
 
-void checkAttributesData(unordered_map<string, unordered_map<string, attributeData*>> *attributesData)
+void checkAttributesData(unordered_map<string, attributeData*> *attributesData)
 {
-  cout << "Categorical attributes number: " << attributesData->at("categorical").size() << endl;
-  cout << "Numerical attributes number: " << attributesData->at("numerical").size() << endl;
+  cout << "Attributes number: " << attributesData->size() << endl;
 
   // Gather keys
+  vector<string> keys;
+  keys.reserve(attributesData->size());
 
-  vector<string> catKeys;
-  catKeys.reserve(attributesData->at("categorical").size());
-  vector<string> numKeys;
-  numKeys.reserve(attributesData->at("numerical").size());
+  for(auto kv : *attributesData) keys.push_back(kv.first);
 
-  for(auto kv : attributesData->at("categorical")) catKeys.push_back(kv.first);
+  cout << "Attributes:\n";
 
-  for(auto kv : attributesData->at("numerical")) numKeys.push_back(kv.first);
-
-  cout << "Numerical attributes:\n";
-
-  for(string attributeName : numKeys) cout << attributeName << endl;
-
-  cout << "Categorical attributes:\n";
-
-  for(string attributeName : catKeys) cout << attributeName << endl;
-
-
+  for(string attributeName : keys) cout << attributeName << endl;
 }

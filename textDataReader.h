@@ -23,7 +23,7 @@ class textDataReader : public dataReader
     textDataReader(std::ifstream *sourceFile);
     void getNextRawDatum(void *target);
     vector<string>* getAttributesOrder();
-    void gatherAttributesData(unordered_map<string, unordered_map<string, attributeData*>> *attributesData);
+    void gatherAttributesData(unordered_map<string, attributeData*> *attributesData);
     bool hasMoreData();
 
 

@@ -19,7 +19,7 @@ class dataReader
   public:
 
     virtual void getNextRawDatum(void *target) = 0;
-    virtual void gatherAttributesData(unordered_map<string, unordered_map<string, attributeData*>> *attributesData) = 0;
+    virtual void gatherAttributesData(unordered_map<string, attributeData*> *attributesData) = 0;
     virtual bool hasMoreData() = 0;
 
     virtual vector<string>* getAttributesOrder() = 0;

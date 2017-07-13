@@ -29,9 +29,8 @@ void textDataReader::getNextRawDatum(void *target)
   }
 }
 
-void textDataReader::gatherAttributesData(unordered_map<string, unordered_map<string, attributeData*>> *attributesData)
+void textDataReader::gatherAttributesData(unordered_map<string, attributeData*> *attributesData)
 {
-
   // This only works for .arff files. Not tested for others.
   string line;
 
@@ -56,9 +55,8 @@ void textDataReader::gatherAttributesData(unordered_map<string, unordered_map<st
       getline(ss, type, ' ');
 
       // Append attribute to proper place
-
-      if (type.find("numeric") == 0) attributesData->at("numerical")[name] = new numericalAttributeData(name);
-      else attributesData->at("categorical")[name] = new categoricalAttributeData(name);
+      if (type.find("numeric") == 0) (*attributesData)[name] = new numericalAttributeData(name);
+      else (*attributesData)[name] = new categoricalAttributeData(name);
 
       attributesOrder->push_back(name);
 
