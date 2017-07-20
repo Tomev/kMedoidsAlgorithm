@@ -25,6 +25,10 @@ class cluster
 
     long size();
 
+    void setRepresentative(sample *newRepresentative);
+    void findRepresentative();
+    sample* getRepresentative();
+
   private:
 
     int index;

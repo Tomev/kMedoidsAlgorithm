@@ -10,7 +10,7 @@ cluster::cluster(long index) : index(index)
 
 cluster::cluster(long index, sample *object) : index(index), object(object)
 {
-
+  findRepresentative();
 }
 
 bool cluster::representsObject()
@@ -77,6 +77,21 @@ long cluster::size()
   if(representsObject()) return 1;
 
   return subclusters.size();
+}
+
+void cluster::setRepresentative(sample *newRepresentative)
+{
+  representative = newRepresentative;
+}
+
+void cluster::findRepresentative()
+{
+  if(representsObject()) representative = object;
+}
+
+sample *cluster::getRepresentative()
+{
+  return representative;
 }
 
 
