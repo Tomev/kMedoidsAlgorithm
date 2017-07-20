@@ -1,13 +1,13 @@
-#include "completeLinkClusterDistanceMeasure.h"
+#include "averageLinkClusterDistanceMeasure.h"
 
 #include <iostream>
 
-completeLinkClusterDistanceMeasure::completeLinkClusterDistanceMeasure(objectsDistanceMeasure *objDistanceMeasure)
+averageLinkClusterDistanceMeasure::averageLinkClusterDistanceMeasure(objectsDistanceMeasure *objDistanceMeasure)
 {
   this->objDistanceMeasure = objDistanceMeasure;
 }
 
-double completeLinkClusterDistanceMeasure::countClustersDistance(cluster *cluster1, cluster *cluster2)
+double averageLinkClusterDistanceMeasure::countClustersDistance(cluster *cluster1, cluster *cluster2)
 {
   vector<sample*> firstClusterObjects, secondClusterObjects;
 
@@ -15,16 +15,17 @@ double completeLinkClusterDistanceMeasure::countClustersDistance(cluster *cluste
   cluster1->getObjects(&firstClusterObjects);
   cluster2->getObjects(&secondClusterObjects);
 
-  double result = findHighestDistance(&firstClusterObjects, &secondClusterObjects);
+  double result = countSumOfClustersObjectsDistances(&firstClusterObjects, &secondClusterObjects);
+  result /= firstClusterObjects.size() * secondClusterObjects.size();
 
   return result;
 }
 
-double completeLinkClusterDistanceMeasure::findHighestDistance(
+double averageLinkClusterDistanceMeasure::countSumOfClustersObjectsDistances(
   vector<sample *> *firstClusterObjects, vector<sample *> *secondClusterObjects)
 {
   // Ensure that distance is normalized to [0,1]
-  double maxDistance = 0, distance;
+  double sum = 0, distance;
 
   for(sample* firstClusterObject : *firstClusterObjects)
   {
@@ -38,11 +39,15 @@ double completeLinkClusterDistanceMeasure::findHighestDistance(
         continue;
       }
 
-      if(distance < 0) cout << "Distance < 0";
+      if(distance < 0)
+      {
+        cout << "Distance < 0";
+        continue;
+      }
 
-      if(distance > maxDistance) maxDistance = distance;
+      sum += distance;
     }
   }
 
-  return maxDistance;
+  return sum;
 }

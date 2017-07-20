@@ -23,6 +23,8 @@ class cluster
 
     bool hasSubcluster(cluster* c);
 
+    long size();
+
   private:
 
     int index;

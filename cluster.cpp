@@ -72,6 +72,13 @@ void cluster::addSubcluster(cluster subcluster)
   subclusters.push_back(subcluster);
 }
 
+long cluster::size()
+{
+  if(representsObject()) return 1;
+
+  return subclusters.size();
+}
+
 
 
 

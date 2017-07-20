@@ -14,6 +14,7 @@
 #include "customObjectsDistanceMeasure.h"
 #include "singleLinkClusterDistanceMeasure.h"
 #include "completeLinkClusterDistanceMeasure.h"
+#include "averageLinkClusterDistanceMeasure.h"
 
 // Tests
 void checkAttributesData(unordered_map<string, attributeData*> *attributesData);
@@ -55,7 +56,7 @@ int main()
   attributesDistanceMeasure* ndm = new gowersNumericalAttributesDistanceMeasure(&attributesData);
   attributesDistanceMeasure* cdm = new smdCategoricalAttributesDistanceMeasure();
   objectsDistanceMeasure* odm = new customObjectsDistanceMeasure(cdm, ndm, &attributesData);
-  clustersDistanceMeasure* cludm = new completeLinkClusterDistanceMeasure(odm);
+  clustersDistanceMeasure* cludm = new averageLinkClusterDistanceMeasure(odm);
   groupingAlgorithm* a = new kMedoidsAlgorithm(10, cludm);
 
   a->groupObjects(&samples, &clusters);
