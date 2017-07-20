@@ -13,6 +13,7 @@
 #include "gowersNumericalAttributesDistanceMeasure.h"
 #include "customObjectsDistanceMeasure.h"
 #include "singleLinkClusterDistanceMeasure.h"
+#include "completeLinkClusterDistanceMeasure.h"
 
 // Tests
 void checkAttributesData(unordered_map<string, attributeData*> *attributesData);
@@ -43,7 +44,7 @@ int main()
   vector<sample*> samples;
   vector<cluster> clusters;
 
-  for(int i = 0; i < 1000; ++i)
+  for(int i = 0; i < 50; ++i)
   {
     dr->getNextRawDatum(dp->buffer);
     dp->addDatumToContainer(&samples);
@@ -54,7 +55,7 @@ int main()
   attributesDistanceMeasure* ndm = new gowersNumericalAttributesDistanceMeasure(&attributesData);
   attributesDistanceMeasure* cdm = new smdCategoricalAttributesDistanceMeasure();
   objectsDistanceMeasure* odm = new customObjectsDistanceMeasure(cdm, ndm, &attributesData);
-  clustersDistanceMeasure* cludm = new singleLinkClusterDistanceMeasure(odm);
+  clustersDistanceMeasure* cludm = new completeLinkClusterDistanceMeasure(odm);
   groupingAlgorithm* a = new kMedoidsAlgorithm(10, cludm);
 
   a->groupObjects(&samples, &clusters);
