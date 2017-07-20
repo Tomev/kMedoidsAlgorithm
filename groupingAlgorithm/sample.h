@@ -11,7 +11,6 @@ class sample
   public:
     unordered_map<string, string> attributesValues;
     virtual void print() = 0;
-
 };
 
 

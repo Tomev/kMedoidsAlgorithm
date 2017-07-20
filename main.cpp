@@ -4,13 +4,13 @@
 
 #include "dataReader.h"
 #include "dataParser.h"
-#include "textDataReader.h"
-#include "textDataParser.h"
-#include "groupingAlgorithm.h"
+#include "dataReaders/textDataReader.h"
+#include "dataParsers/textDataParser.h"
+#include "groupingAlgorithm/groupingAlgorithm.h"
 #include "kMedoidsAlgorithm.h"
 #include "numericalAttributeData.h"
-#include "smdCategoricalAttributesDistanceMeasure.h"
-#include "gowersNumericalAttributesDistanceMeasure.h"
+#include "attributesDistanceMeasures/categorical/smdCategoricalAttributesDistanceMeasure.h"
+#include "attributesDistanceMeasures/numerical/gowersNumericalAttributesDistanceMeasure.h"
 #include "customObjectsDistanceMeasure.h"
 #include "clusterDistanceMeasures/singleLinkClusterDistanceMeasure.h"
 #include "clusterDistanceMeasures/completeLinkClusterDistanceMeasure.h"
@@ -57,7 +57,7 @@ int main()
   attributesDistanceMeasure* ndm = new gowersNumericalAttributesDistanceMeasure(&attributesData);
   attributesDistanceMeasure* cdm = new smdCategoricalAttributesDistanceMeasure();
   objectsDistanceMeasure* odm = new customObjectsDistanceMeasure(cdm, ndm, &attributesData);
-  clustersDistanceMeasure* cludm = new centroidLinkClusterDistanceMeasure(odm);
+  clustersDistanceMeasure* cludm = new completeLinkClusterDistanceMeasure(odm);
   groupingAlgorithm* a = new kMedoidsAlgorithm(10, cludm);
 
   a->groupObjects(&samples, &clusters);

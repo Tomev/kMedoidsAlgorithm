@@ -6,8 +6,8 @@
 #include <sstream>
 
 #include "textDataReader.h"
-#include "numericalAttributeData.h"
-#include "categoricalAttributeData.h"
+#include "../numericalAttributeData.h"
+#include "../categoricalAttributeData.h"
 
 textDataReader::textDataReader(std::ifstream *sourceFile) : sourceFile(sourceFile) {}
 

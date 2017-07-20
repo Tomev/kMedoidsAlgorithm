@@ -3,8 +3,8 @@
 
 #include <unordered_map>
 
-#include "numericalAttributeData.h"
-#include "attributesDistanceMeasure.h"
+#include "../../numericalAttributeData.h"
+#include "../../attributesDistanceMeasure.h"
 
 class gowersNumericalAttributesDistanceMeasure : public attributesDistanceMeasure
 {

@@ -1,7 +1,3 @@
-//
-// Created by Tomev on 22.06.2017.
-//
-
 #ifndef K_MEDOIDALGORITHM_GROUPINGALGORITHM_H
 #define K_MEDOIDALGORITHM_GROUPINGALGORITHM_H
 
@@ -12,8 +8,6 @@ class groupingAlgorithm
 {
   public:
     virtual void groupObjects(std::vector<sample*>* objects, std::vector<cluster>* target) = 0;
-
-  protected:
 
 };
 

@@ -1,7 +1,7 @@
 #ifndef K_MEDOIDALGORITHM_SMCCATEGORICALATTRIBUTESDISTANCEMEASURE_H
 #define K_MEDOIDALGORITHM_SMCCATEGORICALATTRIBUTESDISTANCEMEASURE_H
 
-#include "attributesDistanceMeasure.h"
+#include "../../attributesDistanceMeasure.h"
 
 class smdCategoricalAttributesDistanceMeasure : public attributesDistanceMeasure
 {

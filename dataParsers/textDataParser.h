@@ -14,9 +14,9 @@
 #include <c++/iostream>
 #include <unordered_map>
 
-#include "dataParser.h"
-#include "textDataSample.h"
-#include "attributeData.h"
+#include "../dataParser.h"
+#include "../dataSamples/textDataSample.h"
+#include "../attributeData.h"
 
 using namespace std;
 

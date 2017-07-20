@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "sample.h"
+#include "groupingAlgorithm/sample.h"
 #include "attributesDistanceMeasure.h"
 #include "attributeData.h"
 

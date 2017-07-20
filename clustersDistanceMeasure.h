@@ -1,7 +1,7 @@
 #ifndef K_MEDOIDALGORITHM_CLUSTERSDISTANCEMEASURE_H
 #define K_MEDOIDALGORITHM_CLUSTERSDISTANCEMEASURE_H
 
-#include "cluster.h"
+#include "groupingAlgorithm/cluster.h"
 #include "objectsDistanceMeasure.h"
 
 class clustersDistanceMeasure

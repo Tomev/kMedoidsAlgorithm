@@ -5,7 +5,7 @@
 #ifndef K_MEDOIDALGORITHM_KMEDOIDSALGORITHM_H
 #define K_MEDOIDALGORITHM_KMEDOIDSALGORITHM_H
 
-#include "groupingAlgorithm.h"
+#include "groupingAlgorithm/groupingAlgorithm.h"
 #include "objectsDistanceMeasure.h"
 #include "clustersDistanceMeasure.h"
 
