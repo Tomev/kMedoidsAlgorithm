@@ -12,10 +12,10 @@
 #include "smdCategoricalAttributesDistanceMeasure.h"
 #include "gowersNumericalAttributesDistanceMeasure.h"
 #include "customObjectsDistanceMeasure.h"
-#include "singleLinkClusterDistanceMeasure.h"
-#include "completeLinkClusterDistanceMeasure.h"
-#include "averageLinkClusterDistanceMeasure.h"
-#include "centroidLinkClusterDistanceMeasure.h"
+#include "clusterDistanceMeasures/singleLinkClusterDistanceMeasure.h"
+#include "clusterDistanceMeasures/completeLinkClusterDistanceMeasure.h"
+#include "clusterDistanceMeasures/averageLinkClusterDistanceMeasure.h"
+#include "clusterDistanceMeasures/centroidLinkClusterDistanceMeasure.h"
 
 // Tests
 void checkAttributesData(unordered_map<string, attributeData*> *attributesData);

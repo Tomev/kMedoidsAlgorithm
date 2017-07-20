@@ -1,7 +1,7 @@
 #ifndef K_MEDOIDALGORITHM_CENTROIDLINKCLUSTERDISTANCEMEASURE_H
 #define K_MEDOIDALGORITHM_CENTROIDLINKCLUSTERDISTANCEMEASURE_H
 
-#include "clustersDistanceMeasure.h"
+#include "../clustersDistanceMeasure.h"
 
 class centroidLinkClusterDistanceMeasure : public clustersDistanceMeasure
 {

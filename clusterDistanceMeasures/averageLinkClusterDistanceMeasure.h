@@ -1,7 +1,7 @@
 #ifndef K_MEDOIDALGORITHM_AVERAGELINKCLUSTERDISTANCEMEASURE_H
 #define K_MEDOIDALGORITHM_AVERAGELINKCLUSTERDISTANCEMEASURE_H
 
-#include "clustersDistanceMeasure.h"
+#include "../clustersDistanceMeasure.h"
 
 class averageLinkClusterDistanceMeasure : public clustersDistanceMeasure
 {
