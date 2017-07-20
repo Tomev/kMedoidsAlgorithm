@@ -3,7 +3,7 @@
 
 #include "attributesDistanceMeasure.h"
 
-class smcCategoricalAttributesDistanceMeasure : public attributesDistanceMeasure
+class smdCategoricalAttributesDistanceMeasure : public attributesDistanceMeasure
 {
   double countAttributesDistance(string firstAttributeValue, string secondAttributeValue);
 };

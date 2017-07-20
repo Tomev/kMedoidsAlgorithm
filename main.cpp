@@ -9,7 +9,7 @@
 #include "groupingAlgorithm.h"
 #include "kMedoidsAlgorithm.h"
 #include "numericalAttributeData.h"
-#include "smcCategoricalAttributesDistanceMeasure.h"
+#include "smdCategoricalAttributesDistanceMeasure.h"
 #include "gowersNumericalAttributesDistanceMeasure.h"
 #include "customObjectsDistanceMeasure.h"
 #include "singleLinkClusterDistanceMeasure.h"
@@ -32,7 +32,6 @@ int main()
   clock_t begin = clock();
 
   // Generate samples and gather attributes data
-
   unordered_map<string, attributeData*> attributesData;
 
   dataReader* dr = new textDataReader(&sourceFile);
@@ -52,9 +51,8 @@ int main()
   }
 
   // Group objects
-
   attributesDistanceMeasure* ndm = new gowersNumericalAttributesDistanceMeasure(&attributesData);
-  attributesDistanceMeasure* cdm = new smcCategoricalAttributesDistanceMeasure();
+  attributesDistanceMeasure* cdm = new smdCategoricalAttributesDistanceMeasure();
   objectsDistanceMeasure* odm = new customObjectsDistanceMeasure(cdm, ndm, &attributesData);
   clustersDistanceMeasure* cludm = new singleLinkClusterDistanceMeasure(odm);
   groupingAlgorithm* a = new kMedoidsAlgorithm(10, cludm);
@@ -97,7 +95,7 @@ void checkAttributesData(unordered_map<string, attributeData*> *attributesData)
 void checkDistanceMeasurePerformance(vector<sample*> *samples, unordered_map<string, attributeData*> *attributesData)
 {
   attributesDistanceMeasure* ndm = new gowersNumericalAttributesDistanceMeasure(attributesData);
-  attributesDistanceMeasure* cdm = new smcCategoricalAttributesDistanceMeasure();
+  attributesDistanceMeasure* cdm = new smdCategoricalAttributesDistanceMeasure();
 
   objectsDistanceMeasure* dm = new customObjectsDistanceMeasure(cdm, ndm, attributesData);
 

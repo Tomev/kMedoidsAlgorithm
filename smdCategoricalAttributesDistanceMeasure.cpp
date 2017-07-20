@@ -1,6 +1,6 @@
-#include "smcCategoricalAttributesDistanceMeasure.h"
+#include "smdCategoricalAttributesDistanceMeasure.h"
 
-double smcCategoricalAttributesDistanceMeasure::countAttributesDistance
+double smdCategoricalAttributesDistanceMeasure::countAttributesDistance
   (string firstAttributeValue, string secondAttributeValue)
 {
   if (firstAttributeValue == secondAttributeValue) return 0;
