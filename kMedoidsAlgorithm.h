@@ -1,29 +1,29 @@
-//
-// Created by Tomev on 22.06.2017.
-//
-
 #ifndef K_MEDOIDALGORITHM_KMEDOIDSALGORITHM_H
 #define K_MEDOIDALGORITHM_KMEDOIDSALGORITHM_H
 
-#include "groupingAlgorithm/groupingAlgorithm.h"
+#include "groupingAlgorithm/distanceBasedGroupingAlgorithm.h"
 #include "objectsDistanceMeasure.h"
 #include "clustersDistanceMeasure.h"
 
-class kMedoidsAlgorithm : public groupingAlgorithm
+class kMedoidsAlgorithm : public distanceBasedGroupingAlgorithm
 {
   public:
 
     kMedoidsAlgorithm(int numberOfMedoids, clustersDistanceMeasure* clusDistanceMeasure);
-    void groupObjects(std::vector<sample*>* objects, std::vector<cluster>* target);
+    void groupObjects(vector<sample*>* objects, vector<cluster>* target);
+    void generateClustering(vector<sample*>* objects, vector<cluster>* target);
+
+    void setMedoids(vector<cluster>* medoids);
+    void generateClusteringFromMedoids(vector<sample*>* objects, vector<cluster>* target);
+
+protected:
 
   protected:
 
     int numberOfMedoids = 1;
 
-    clustersDistanceMeasure* clusDistanceMeasure;
-
-    std::vector<cluster> clusters;
-    std::vector<cluster> medoids;
+    vector<cluster> clusters;
+    vector<cluster> medoids;
 
     bool canGroupingBePerformed(std::vector<sample*>* objects);
     void clusterObjects(std::vector<sample*> *objects);

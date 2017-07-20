@@ -1,7 +1,3 @@
-//
-// Created by Tomev on 22.06.2017.
-//
-
 #include <iostream>
 #include <algorithm>
 #include <set>
@@ -9,7 +5,10 @@
 #include "kMedoidsAlgorithm.h"
 
 kMedoidsAlgorithm::kMedoidsAlgorithm(int numberOfMedoids, clustersDistanceMeasure* clusDistanceMeasure) :
-  numberOfMedoids(numberOfMedoids), clusDistanceMeasure(clusDistanceMeasure) {}
+  numberOfMedoids(numberOfMedoids)
+{
+  this->clusDistanceMeasure = clusDistanceMeasure;
+}
 
 bool kMedoidsAlgorithm::canGroupingBePerformed(std::vector<sample*>* objects)
 {
