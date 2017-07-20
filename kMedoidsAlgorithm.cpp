@@ -32,6 +32,18 @@ void kMedoidsAlgorithm::groupObjects(std::vector<sample*> *objects, std::vector<
   if(!canGroupingBePerformed(objects)) return;
 
   clusterObjects(objects);
+  findOptimalMedoids();
+  createClustersFromMedoids(target);
+}
+
+void kMedoidsAlgorithm::clusterObjects(std::vector<sample*> *objects)
+{
+  for(int clusterNumber = 0; clusterNumber < objects->size(); ++clusterNumber)
+    clusters.push_back(cluster(clusterNumber+1, objects->at(clusterNumber)));
+}
+
+void kMedoidsAlgorithm::findOptimalMedoids()
+{
   selectRandomMedoids();
 
   double lowestCost = countCost(&medoids);
@@ -52,14 +64,6 @@ void kMedoidsAlgorithm::groupObjects(std::vector<sample*> *objects, std::vector<
     }
     else break;
   }
-
-  *target = std::vector<cluster>(medoids);
-}
-
-void kMedoidsAlgorithm::clusterObjects(std::vector<sample*> *objects)
-{
-  for(int clusterNumber = 0; clusterNumber < objects->size(); ++clusterNumber)
-    clusters.push_back(cluster(clusterNumber+1, objects->at(clusterNumber)));
 }
 
 void kMedoidsAlgorithm::selectRandomMedoids()
@@ -156,5 +160,56 @@ void kMedoidsAlgorithm::findPotentialBestMedoidConfiguration(vector<cluster> *po
 
   *potentialBestMedoids = currentBestConfiguration;
 }
+
+void kMedoidsAlgorithm::createClustersFromMedoids(vector<cluster> *target)
+{
+  // Ensure that target vector is empty.
+  target->clear();
+
+  for(int medoidIndex = 0; medoidIndex < medoids.size(); ++medoidIndex)
+  {
+    target->push_back(cluster(medoidIndex));
+    target->back().addSubcluster(medoids.at(medoidIndex));
+  }
+
+  int closestMedoidIndex;
+
+  for(cluster c : clusters)
+  {
+    closestMedoidIndex = findClosestMedoidIndex(&c, &medoids);
+    target->at(closestMedoidIndex).addSubcluster(c);
+  }
+}
+
+void kMedoidsAlgorithm::setMedoids(vector<cluster> *newMedoids)
+{
+  if(newMedoids != nullptr)
+  {
+    if(newMedoids->size() == numberOfMedoids)
+    {
+      medoids = *newMedoids;
+    }
+  }
+}
+
+vector<cluster> kMedoidsAlgorithm::getMedoids(vector<sample*>* objects)
+{
+  if(medoids.size() != numberOfMedoids)
+  {
+    clusterObjects(objects);
+    findOptimalMedoids();
+  }
+
+  return medoids;
+}
+
+void kMedoidsAlgorithm::generateClusteringFromMedoids(vector<sample *> *objects, vector<cluster> *target)
+{
+  clusterObjects(objects);
+}
+
+
+
+
 
 

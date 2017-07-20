@@ -10,10 +10,12 @@ class kMedoidsAlgorithm : public distanceBasedGroupingAlgorithm
   public:
 
     kMedoidsAlgorithm(int numberOfMedoids, clustersDistanceMeasure* clusDistanceMeasure);
-    void groupObjects(vector<sample*>* objects, vector<cluster>* target);
-    void generateClustering(vector<sample*>* objects, vector<cluster>* target);
 
-    void setMedoids(vector<cluster>* medoids);
+    void groupObjects(vector<sample*>* objects, vector<cluster>* target);
+
+    void setMedoids(vector<cluster>* newMedoids);
+    vector<cluster> getMedoids(vector<sample*>* objects);
+
     void generateClusteringFromMedoids(vector<sample*>* objects, vector<cluster>* target);
 
 protected:
@@ -27,11 +29,13 @@ protected:
 
     bool canGroupingBePerformed(std::vector<sample*>* objects);
     void clusterObjects(std::vector<sample*> *objects);
-    void selectRandomMedoids();
-    double countCost(vector<cluster> *potentialMedoids);
-      bool isMedoid(cluster* c, vector<cluster> *medoids);
-      int findClosestMedoidIndex(cluster *c, vector<cluster>* potentialMedoids);
-    void findPotentialBestMedoidConfiguration(vector<cluster> *potentialBestMedoids, double minCost);
+    void findOptimalMedoids();
+      void selectRandomMedoids();
+      double countCost(vector<cluster> *potentialMedoids);
+        bool isMedoid(cluster* c, vector<cluster> *medoids);
+        int findClosestMedoidIndex(cluster *c, vector<cluster>* potentialMedoids);
+      void findPotentialBestMedoidConfiguration(vector<cluster> *potentialBestMedoids, double minCost);
+    void createClustersFromMedoids(vector<cluster>* target);
 };
 
 
