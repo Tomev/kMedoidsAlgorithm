@@ -166,18 +166,24 @@ void kMedoidsAlgorithm::createClustersFromMedoids(vector<cluster> *target)
   // Ensure that target vector is empty.
   target->clear();
 
+  // Create outer clusters.
   for(int medoidIndex = 0; medoidIndex < medoids.size(); ++medoidIndex)
   {
     target->push_back(cluster(medoidIndex));
     target->back().addSubcluster(medoids.at(medoidIndex));
+    target->back().setRepresentative(medoids.at(medoidIndex).getRepresentative());
   }
 
+  // Assign objects to outer clusters.
   int closestMedoidIndex;
 
   for(cluster c : clusters)
   {
-    closestMedoidIndex = findClosestMedoidIndex(&c, &medoids);
-    target->at(closestMedoidIndex).addSubcluster(c);
+    if(!isMedoid(&c, &medoids))
+    {
+      closestMedoidIndex = findClosestMedoidIndex(&c, &medoids);
+      target->at(closestMedoidIndex).addSubcluster(c);
+    }
   }
 }
 
@@ -205,7 +211,13 @@ vector<cluster> kMedoidsAlgorithm::getMedoids(vector<sample*>* objects)
 
 void kMedoidsAlgorithm::generateClusteringFromMedoids(vector<sample *> *objects, vector<cluster> *target)
 {
+  if(!canGroupingBePerformed(objects)) return;
+
   clusterObjects(objects);
+
+  if(medoids.size() != numberOfMedoids) findOptimalMedoids();
+
+  createClustersFromMedoids(target);
 }
 
 
