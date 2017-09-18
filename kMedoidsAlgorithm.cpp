@@ -32,6 +32,9 @@ void kMedoidsAlgorithm::groupObjects(std::vector<sample*> *objects, std::vector<
   if(!canGroupingBePerformed(objects)) return;
 
   clusterObjects(objects);
+
+  gatherSimilarityData();
+
   findOptimalMedoids();
   createClustersFromMedoids(target);
 }
@@ -42,9 +45,26 @@ void kMedoidsAlgorithm::clusterObjects(std::vector<sample*> *objects)
     clusters.push_back(cluster(clusterNumber+1, objects->at(clusterNumber)));
 }
 
+int kMedoidsAlgorithm::gatherSimilarityData()
+{
+  similarityData.clear();
+
+  for(int i = 0; i < clusters.size(); ++i)
+  {
+    for (int j = i + 1; j < clusters.size(); ++j)
+    {
+      string name = clusters[i].getClustersId() + "-" + clusters[j].getClustersId();
+      similarityData[name] = clusDistanceMeasure->countClustersDistance(&clusters[i], &clusters[j]);
+    }
+  }
+
+  return similarityData.size();
+}
+
 void kMedoidsAlgorithm::findOptimalMedoids()
 {
-  selectRandomMedoids();
+  //selectRandomMedoids();
+  selectRandomMedoidsAccordingToDistance();
 
   double lowestCost = countCost(&medoids);
 
@@ -80,6 +100,96 @@ void kMedoidsAlgorithm::selectRandomMedoids()
   }
 }
 
+int kMedoidsAlgorithm::selectRandomMedoidsAccordingToDistance()
+{
+  // Create and fill vector of clusters indexes
+  vector<int> nonMedoidsIndexes;
+
+  for(int i = 0; i < clusters.size(); ++i)  nonMedoidsIndexes.push_back(i);
+
+  // Select first medoid at random (uniformly) and add it to vector
+  int nonMedoidPosition = rand() % nonMedoidsIndexes.size(),
+      newMedoidIndex = nonMedoidsIndexes.at(nonMedoidPosition);
+
+  addNewMedoidToVector(newMedoidIndex);
+
+  nonMedoidsIndexes.erase(nonMedoidsIndexes.begin() + nonMedoidPosition);
+
+  while(medoids.size() < numberOfMedoids)
+    addNewMedoidAccordingToDistance(&nonMedoidsIndexes);
+
+  return medoids.size();
+}
+
+int kMedoidsAlgorithm::addNewMedoidToVector(int medoidIndex)
+{
+  cluster newMedoid = clusters.at(medoidIndex);
+  medoids.push_back(newMedoid);
+
+  return medoids.size();
+}
+
+int kMedoidsAlgorithm::addNewMedoidAccordingToDistance(vector<int>* nonMedoidIndexes)
+{
+  vector<double> weights, probabilities;
+
+  fillWeights(&weights, nonMedoidIndexes);
+  fillProbabilitiesFromWeights(&weights, &probabilities);
+
+  double r = ((double) rand() / (RAND_MAX));
+  int newMedoidIndexPosition = 0;
+
+  while(r > probabilities.at(newMedoidIndexPosition))
+    ++newMedoidIndexPosition;
+
+  addNewMedoidToVector(nonMedoidIndexes->at(newMedoidIndexPosition));
+  nonMedoidIndexes->erase(nonMedoidIndexes->begin() + newMedoidIndexPosition);
+
+  return 0;
+}
+
+int kMedoidsAlgorithm::fillWeights(vector<double> *weights, vector<int> *nonMedoidsIndexes)
+{
+  double weight;
+
+  weights->clear();
+
+  for(int nonMedoidIndex : *nonMedoidsIndexes)
+  {
+    weight = 0;
+
+    for(cluster medoid : medoids)
+      weight += this->clusDistanceMeasure->countClustersDistance(&medoid, &clusters.at(nonMedoidIndex));
+
+    weight /= medoids.size();
+    weights->push_back(weight);
+  }
+
+  return weights->size();
+}
+
+int kMedoidsAlgorithm::fillProbabilitiesFromWeights(vector<double> *weights, vector<double> *probabilities)
+{
+  probabilities->clear();
+
+  double weightsSum = 0;
+
+  for(double weight : *weights) weightsSum += weight;
+
+  probabilities->push_back(weights->at(0) / weightsSum);
+
+  double probability;
+
+  for(int i = 1; i < weights->size(); ++i)
+  {
+    probability = probabilities->at(i - 1);
+    probability += weights->at(i) / weightsSum;
+    probabilities->push_back(probability);
+  }
+
+  return probabilities->size();
+}
+
 double kMedoidsAlgorithm::countCost(vector<cluster> *potentialMedoids)
 {
   double cost = 0;
@@ -90,7 +200,8 @@ double kMedoidsAlgorithm::countCost(vector<cluster> *potentialMedoids)
     {
       int closestMedoidIndex = findClosestMedoidIndex(&c, potentialMedoids);
 
-      cost += clusDistanceMeasure->countClustersDistance(&c, &(potentialMedoids->at(closestMedoidIndex)));
+      //cost += clusDistanceMeasure->countClustersDistance(&c, &(potentialMedoids->at(closestMedoidIndex)));
+      cost += getClustersSimilarity(&c, &(potentialMedoids->at(closestMedoidIndex)));
     }
   }
 
@@ -108,11 +219,14 @@ bool kMedoidsAlgorithm::isMedoid(cluster *c, vector<cluster>* medoids)
 int kMedoidsAlgorithm::findClosestMedoidIndex(cluster *c, vector<cluster>* potentialMedoids)
 {
   int closestMedoidIndex = 0;
-  double minDistance = clusDistanceMeasure->countClustersDistance(&(potentialMedoids->at(0)), c), distance;
+  double  //minDistance = clusDistanceMeasure->countClustersDistance(&(potentialMedoids->at(0)), c),
+          minDistance = getClustersSimilarity(&(potentialMedoids->at(0)), c),
+          distance;
 
   for(int medoidIndex = 1; medoidIndex < potentialMedoids->size(); ++medoidIndex)
   {
-    distance = clusDistanceMeasure->countClustersDistance(&(potentialMedoids->at(medoidIndex)), c);
+    //distance = clusDistanceMeasure->countClustersDistance(&(potentialMedoids->at(medoidIndex)), c);
+    distance = getClustersSimilarity(&(potentialMedoids->at(medoidIndex)), c);
 
     if(distance < minDistance)
     {
@@ -122,6 +236,17 @@ int kMedoidsAlgorithm::findClosestMedoidIndex(cluster *c, vector<cluster>* poten
   }
 
   return closestMedoidIndex;
+}
+
+double kMedoidsAlgorithm::getClustersSimilarity(cluster *c1, cluster *c2)
+{
+  string name = c1->getClustersId() + "-" + c2->getClustersId();
+
+  auto similarityIterator = similarityData.find(name);
+
+  if(similarityIterator == similarityData.end()) name = c2->getClustersId() + "-" + c1->getClustersId();
+
+  return similarityData[name];
 }
 
 void kMedoidsAlgorithm::findPotentialBestMedoidConfiguration(vector<cluster> *potentialBestMedoids, double minCost)
@@ -219,6 +344,8 @@ void kMedoidsAlgorithm::generateClusteringFromMedoids(vector<sample *> *objects,
 
   createClustersFromMedoids(target);
 }
+
+
 
 
 

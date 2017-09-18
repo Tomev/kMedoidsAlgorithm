@@ -27,13 +27,22 @@ protected:
     vector<cluster> clusters;
     vector<cluster> medoids;
 
+    unordered_map<string, double> similarityData;
+
     bool canGroupingBePerformed(std::vector<sample*>* objects);
     void clusterObjects(std::vector<sample*> *objects);
+    int gatherSimilarityData();
     void findOptimalMedoids();
       void selectRandomMedoids();
+      int selectRandomMedoidsAccordingToDistance();
+        int addNewMedoidToVector(int medoidIndex);
+        int addNewMedoidAccordingToDistance(vector<int>* nonMedoidIndexes);
+          int fillWeights(vector<double> *weights, vector<int> *nonMedoidsIndexes);
+          int fillProbabilitiesFromWeights(vector<double> *weights, vector<double> *probabilities);
       double countCost(vector<cluster> *potentialMedoids);
         bool isMedoid(cluster* c, vector<cluster> *medoids);
         int findClosestMedoidIndex(cluster *c, vector<cluster>* potentialMedoids);
+        double getClustersSimilarity(cluster *c1, cluster *c2);
       void findPotentialBestMedoidConfiguration(vector<cluster> *potentialBestMedoids, double minCost);
     void createClustersFromMedoids(vector<cluster>* target);
 };

@@ -16,10 +16,13 @@
 #include "clusterDistanceMeasures/completeLinkClusterDistanceMeasure.h"
 #include "clusterDistanceMeasures/averageLinkClusterDistanceMeasure.h"
 #include "clusterDistanceMeasures/centroidLinkClusterDistanceMeasure.h"
+#include "groupingAlgorithm/summarizedCluster.h"
 
 // Tests
 void checkAttributesData(unordered_map<string, attributeData*> *attributesData);
 void checkDistanceMeasurePerformance(vector<sample*> *samples, unordered_map<string, attributeData*> *attributesData);
+int getClustersSummary(vector<cluster>* source, vector<summarizedCluster>* target);
+int checkSummarizedClusters(vector<summarizedCluster>* summaries);
 
 using namespace std;
 
@@ -46,7 +49,7 @@ int main()
   vector<sample*> samples;
   vector<cluster> clusters;
 
-  for(int i = 0; i < 50; ++i)
+  for(int i = 0; i < 500; ++i)
   {
     dr->getNextRawDatum(dp->buffer);
     dp->addDatumToContainer(&samples);
@@ -62,17 +65,21 @@ int main()
 
   a->groupObjects(&samples, &clusters);
 
+  vector<summarizedCluster> summaries;
+
+  getClustersSummary(&clusters, &summaries);
+
   //Tests
 
   //checkAttributesData(&attributesData);
   //checkDistanceMeasurePerformance(&samples, &attributesData);
+  checkSummarizedClusters(&summaries);
 
   clock_t end = clock();
 
   double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 
   cout << "Medoids found in " << elapsed_secs << " seconds.";
-
 
   return 0;
 }
@@ -107,4 +114,28 @@ void checkDistanceMeasurePerformance(vector<sample*> *samples, unordered_map<str
   cout << dm->countObjectsDistance(samples->at(1), samples->at(1)) << endl;
   cout << dm->countObjectsDistance(samples->at(0), samples->at(1)) << endl;
   cout << dm->countObjectsDistance(samples->at(1), samples->at(0)) << endl;
+}
+
+int getClustersSummary(vector<cluster>* source, vector<summarizedCluster>* target)
+{
+  target->clear();
+
+  for(cluster c : *source)
+  {
+    target->push_back(summarizedCluster());
+    target->back().medoid = c.getRepresentative();
+    target->back().weight = c.size();
+  }
+
+  return 0;
+}
+
+int checkSummarizedClusters(vector<summarizedCluster>* summaries)
+{
+  for(summarizedCluster sc : *summaries)
+  {
+    cout << "Sample: " << endl;
+    sc.medoid->print();
+    cout << "Weight: " << sc.weight << endl;
+  }
 }
