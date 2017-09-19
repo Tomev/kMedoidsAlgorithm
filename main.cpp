@@ -61,7 +61,7 @@ int main()
   attributesDistanceMeasure* cdm = new smdCategoricalAttributesDistanceMeasure();
   objectsDistanceMeasure* odm = new customObjectsDistanceMeasure(cdm, ndm, &attributesData);
   clustersDistanceMeasure* cludm = new completeLinkClusterDistanceMeasure(odm);
-  groupingAlgorithm* a = new kMedoidsAlgorithm(10, cludm);
+  groupingAlgorithm* a = new kMedoidsAlgorithm(10, cludm, RANDOM_ACCORDING_TO_DISTANCE);
 
   a->groupObjects(&samples, &clusters);
 
@@ -73,7 +73,7 @@ int main()
 
   //checkAttributesData(&attributesData);
   //checkDistanceMeasurePerformance(&samples, &attributesData);
-  checkSummarizedClusters(&summaries);
+  //checkSummarizedClusters(&summaries);
 
   clock_t end = clock();
 

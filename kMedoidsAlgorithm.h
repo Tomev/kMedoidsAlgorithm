@@ -5,11 +5,18 @@
 #include "objectsDistanceMeasure.h"
 #include "clustersDistanceMeasure.h"
 
+enum medoidsFindingStrategy
+{
+  OPTIMAL = 0,
+  RANDOM = 1,
+  RANDOM_ACCORDING_TO_DISTANCE = 2
+};
+
 class kMedoidsAlgorithm : public distanceBasedGroupingAlgorithm
 {
   public:
 
-    kMedoidsAlgorithm(int numberOfMedoids, clustersDistanceMeasure* clusDistanceMeasure);
+    kMedoidsAlgorithm(int numberOfMedoids, clustersDistanceMeasure* clusDistanceMeasure, int medoidsFindingStrategy);
 
     void groupObjects(vector<sample*>* objects, vector<cluster>* target);
 
@@ -18,11 +25,10 @@ class kMedoidsAlgorithm : public distanceBasedGroupingAlgorithm
 
     void generateClusteringFromMedoids(vector<sample*>* objects, vector<cluster>* target);
 
-protected:
-
   protected:
 
-    int numberOfMedoids = 1;
+    int numberOfMedoids = 1,
+        medoidsFindingStrategy = OPTIMAL;
 
     vector<cluster> clusters;
     vector<cluster> medoids;

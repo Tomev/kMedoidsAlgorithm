@@ -4,8 +4,9 @@
 
 #include "kMedoidsAlgorithm.h"
 
-kMedoidsAlgorithm::kMedoidsAlgorithm(int numberOfMedoids, clustersDistanceMeasure* clusDistanceMeasure) :
-  numberOfMedoids(numberOfMedoids)
+kMedoidsAlgorithm::kMedoidsAlgorithm(int numberOfMedoids, clustersDistanceMeasure* clusDistanceMeasure,
+                                     int medoidsFindingStrategy) :
+  numberOfMedoids(numberOfMedoids), medoidsFindingStrategy(medoidsFindingStrategy)
 {
   this->clusDistanceMeasure = clusDistanceMeasure;
 }
@@ -35,9 +36,24 @@ void kMedoidsAlgorithm::groupObjects(std::vector<sample*> *objects, std::vector<
 
   gatherSimilarityData();
 
-  findOptimalMedoids();
+  switch(medoidsFindingStrategy)
+  {
+    case RANDOM:
+      selectRandomMedoids();
+    break;
+    case RANDOM_ACCORDING_TO_DISTANCE:
+      selectRandomMedoidsAccordingToDistance();
+    break;
+    case OPTIMAL:
+    default:
+      findOptimalMedoids();
+  }
+
+
   createClustersFromMedoids(target);
 }
+
+
 
 void kMedoidsAlgorithm::clusterObjects(std::vector<sample*> *objects)
 {
