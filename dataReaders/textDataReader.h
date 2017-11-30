@@ -21,14 +21,14 @@ class textDataReader : public dataReader
 
     textDataReader(std::ifstream *sourceFile);
     void getNextRawDatum(void *target);
-    vector<string>* getAttributesOrder();
-    void gatherAttributesData(unordered_map<string, attributeData*> *attributesData);
+    std::vector<std::string>* getAttributesOrder();
+    void gatherAttributesData(std::unordered_map<std::string, attributeData*> *attributesData);
     bool hasMoreData();
 
   private:
 
     std::ifstream *sourceFile;
-    vector<string> *attributesOrder;
+    std::vector<std::string> *attributesOrder;
 
 };
 

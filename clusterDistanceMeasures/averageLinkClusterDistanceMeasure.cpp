@@ -9,7 +9,7 @@ averageLinkClusterDistanceMeasure::averageLinkClusterDistanceMeasure(objectsDist
 
 double averageLinkClusterDistanceMeasure::countClustersDistance(cluster *cluster1, cluster *cluster2)
 {
-  vector<sample*> firstClusterObjects, secondClusterObjects;
+  std::vector<std::shared_ptr<sample>> firstClusterObjects, secondClusterObjects;
 
   // Get samples from clusters
   cluster1->getObjects(&firstClusterObjects);
@@ -22,26 +22,26 @@ double averageLinkClusterDistanceMeasure::countClustersDistance(cluster *cluster
 }
 
 double averageLinkClusterDistanceMeasure::countSumOfClustersObjectsDistances(
-  vector<sample *> *firstClusterObjects, vector<sample *> *secondClusterObjects)
+  std::vector<std::shared_ptr<sample>> *firstClusterObjects, std::vector<std::shared_ptr<sample>> *secondClusterObjects)
 {
   // Ensure that distance is normalized to [0,1]
   double sum = 0, distance;
 
-  for(sample* firstClusterObject : *firstClusterObjects)
+  for(std::shared_ptr<sample> firstClusterObject : *firstClusterObjects)
   {
-    for(sample* secondClusterObject : *secondClusterObjects)
+    for(std::shared_ptr<sample> secondClusterObject : *secondClusterObjects)
     {
-      distance = objDistanceMeasure->countObjectsDistance(firstClusterObject, secondClusterObject);
+      distance = objDistanceMeasure->countObjectsDistance(firstClusterObject.get(), secondClusterObject.get());
 
       if(distance > 1)
       {
-        cout << "Distance > 1.";
+        std::cout << "Distance > 1.";
         continue;
       }
 
       if(distance < 0)
       {
-        cout << "Distance < 0";
+        std::cout << "Distance < 0";
         continue;
       }
 

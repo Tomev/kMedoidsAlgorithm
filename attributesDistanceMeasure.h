@@ -3,22 +3,21 @@
 
 #include <string>
 
-using namespace std;
-
 class attributesDistanceMeasure
   {
   public:
 
-    void setCurrentAttributeName(string attributeName)
+    void setCurrentAttributeName(std::string attributeName)
     {
       this->currentAttributeName = attributeName;
     }
 
-    virtual double countAttributesDistance(string firstAttributeValue, string secondAttributeValue) = 0;
+    virtual double countAttributesDistance(std::string firstAttributeValue,
+                                           std::string secondAttributeValue) = 0;
 
   protected:
 
-    string currentAttributeName;
+    std::string currentAttributeName;
 };
 
 #endif //K_MEDOIDALGORITHM_ATTRIBUTESDISTANCEMEASURE_H

@@ -7,8 +7,8 @@
 class groupingAlgorithm
 {
   public:
-    virtual void groupObjects(std::vector<sample*>* objects, std::vector<cluster>* target) = 0;
-
+    virtual void groupObjects(std::vector<std::shared_ptr<sample>>* objects, std::vector<std::shared_ptr<cluster>>* target) = 0;
+    virtual void groupClusters(std::vector<std::shared_ptr<cluster>>* clusters, std::vector<std::shared_ptr<cluster>>* target) = 0;
 };
 
 

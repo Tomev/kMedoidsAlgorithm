@@ -10,7 +10,7 @@ class customObjectsDistanceMeasure : public objectsDistanceMeasure
     customObjectsDistanceMeasure(
       attributesDistanceMeasure *categoricalAttributesDistanceMeasure,
       attributesDistanceMeasure *numericalAttributesDistanceMeasure,
-      unordered_map<string, attributeData*> *attributesData);
+      std::unordered_map<std::string, attributeData*> *attributesData);
 
     double countObjectsDistance(sample* sample1, sample* sample2);
 

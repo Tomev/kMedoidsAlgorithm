@@ -7,10 +7,10 @@ class numericalAttributeData : public attributeData
 {
   public:
 
-    numericalAttributeData(string name);
+    numericalAttributeData(std::string name);
 
-    string getName();
-    string getType();
+    std::string getName();
+    std::string getType();
 
     double getMaximalValue();
     double getMinimalValue();
@@ -24,7 +24,7 @@ class numericalAttributeData : public attributeData
 
   protected:
 
-    string name;
+    std::string name;
 
     bool occurred = false;
 

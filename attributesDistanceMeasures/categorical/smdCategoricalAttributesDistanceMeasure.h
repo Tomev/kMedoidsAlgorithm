@@ -6,7 +6,7 @@
 class smdCategoricalAttributesDistanceMeasure : public attributesDistanceMeasure
 {
   public:
-    double countAttributesDistance(string firstAttributeValue, string secondAttributeValue);
+    double countAttributesDistance(std::string firstAttributeValue, std::string secondAttributeValue);
 };
 
 

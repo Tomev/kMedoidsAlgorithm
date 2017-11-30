@@ -13,7 +13,8 @@ public:
 
 protected:
 
-  double findHighestDistance(vector<sample*> *firstClusterObjects, vector<sample*> *secondClusterObjects);
+  double findHighestDistance(std::vector<std::shared_ptr<sample> > *firstClusterObjects,
+                             std::vector<std::shared_ptr<sample> > *secondClusterObjects);
 
 };
 

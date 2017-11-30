@@ -8,7 +8,7 @@ singleLinkClusterDistanceMeasure::singleLinkClusterDistanceMeasure(objectsDistan
 
 double singleLinkClusterDistanceMeasure::countClustersDistance(cluster *cluster1, cluster *cluster2)
 {
-  vector<sample*> firstClusterObjects, secondClusterObjects;
+  std::vector<std::shared_ptr<sample>> firstClusterObjects, secondClusterObjects;
 
   // Get samples from clusters
 
@@ -21,22 +21,23 @@ double singleLinkClusterDistanceMeasure::countClustersDistance(cluster *cluster1
 }
 
 double singleLinkClusterDistanceMeasure::findLowestDistance(
-  vector<sample *>* firstClusterObjects, vector<sample *>* secondClusterObjects)
+  std::vector<std::shared_ptr<sample>>* firstClusterObjects, std::vector<std::shared_ptr<sample>>* secondClusterObjects)
 {
   // Ensure that distance is normalized to [0,1]
   double minDistance = 1, distance;
 
-  for(sample* firstClusterObject : *firstClusterObjects)
+  for(std::shared_ptr<sample> firstClusterObject : *firstClusterObjects)
   {
-    for(sample* secondClusterObject : *secondClusterObjects)
+    for(std::shared_ptr<sample> secondClusterObject : *secondClusterObjects)
     {
-      distance = objDistanceMeasure->countObjectsDistance(firstClusterObject, secondClusterObject);
+      distance = objDistanceMeasure->countObjectsDistance(firstClusterObject.get(),
+                                                          secondClusterObject.get());
 
-      if(distance > 1) cout << "Distance > 1.";
+      if(distance > 1) std::cout << "Distance > 1.";
 
       if(distance < 0)
       {
-        cout << "Distance < 0";
+        std::cout << "Distance < 0";
         continue;
       }
 

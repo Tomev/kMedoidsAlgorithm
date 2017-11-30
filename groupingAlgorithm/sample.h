@@ -4,12 +4,10 @@
 #include <string>
 #include <unordered_map>
 
-using namespace std;
-
 class sample
 {
   public:
-    unordered_map<string, string> attributesValues;
+    std::unordered_map<std::string, std::string> attributesValues;
     virtual void print() = 0;
 };
 

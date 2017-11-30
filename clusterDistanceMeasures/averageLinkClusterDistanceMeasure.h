@@ -13,7 +13,8 @@ public:
 
 protected:
 
-  double countSumOfClustersObjectsDistances(vector<sample*> *firstClusterObjects, vector<sample*> *secondClusterObjects);
+  double countSumOfClustersObjectsDistances(std::vector<std::shared_ptr<sample> > *firstClusterObjects,
+                                            std::vector<std::shared_ptr<sample> > *secondClusterObjects);
 
 };
 

@@ -3,6 +3,7 @@
 
 #include <c++/vector>
 #include <string>
+#include <memory>
 
 #include "sample.h"
 
@@ -11,31 +12,43 @@ class cluster
   public:
 
     cluster(long index);
-    cluster(long index, sample* object);
+    cluster(long index, std::shared_ptr<sample> object);
 
     bool representsObject();
     std::string getClustersId();
 
-    sample* getObject();
-    void getObjects(vector<sample*>* target);
+    std::shared_ptr<sample> getObject();
+    void getObjects(std::vector<std::shared_ptr<sample>> *target);
+    void getSubclusters(std::vector<std::shared_ptr<cluster>> *target);
 
-    void addSubcluster(cluster subcluster);
+    void addSubcluster(std::shared_ptr<cluster> subcluster);
 
-    bool hasSubcluster(cluster* c);
+    bool hasSubcluster(std::shared_ptr<cluster> c);
 
     long size();
+
+    void setWeight(long weight);
+    long getWeight();
+
+    cluster *getMedoid();
+    void setMedoid(std::shared_ptr<cluster> newMedoid);
 
     void setRepresentative(sample *newRepresentative);
     void findRepresentative();
     sample* getRepresentative();
 
-  private:
+  protected:
 
-    int index;
-    sample* object;
+    long index;
+    long weight = 0;
+
+    std::shared_ptr<sample> object;
     sample* representative;
+    std::shared_ptr<cluster> medoid;
 
-    std::vector<cluster> subclusters;
+    std::vector<std::shared_ptr<cluster>> subclusters;
+
+
 };
 
 

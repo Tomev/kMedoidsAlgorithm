@@ -5,6 +5,8 @@
 #include "objectsDistanceMeasure.h"
 #include "clustersDistanceMeasure.h"
 
+#include "unordered_map"
+
 enum medoidsFindingStrategy
 {
   OPTIMAL = 0,
@@ -16,41 +18,57 @@ class kMedoidsAlgorithm : public distanceBasedGroupingAlgorithm
 {
   public:
 
-    kMedoidsAlgorithm(int numberOfMedoids, clustersDistanceMeasure* clusDistanceMeasure, int medoidsFindingStrategy);
+    kMedoidsAlgorithm(  int numberOfMedoids,
+                        std::shared_ptr<clustersDistanceMeasure> clusDistanceMeasure,
+                        int medoidsFindingStrategy);
 
-    void groupObjects(vector<sample*>* objects, vector<cluster>* target);
+    void groupObjects(std::vector<std::shared_ptr<sample>>* objects,
+                      std::vector<std::shared_ptr<cluster>>* target);
 
-    void setMedoids(vector<cluster>* newMedoids);
-    vector<cluster> getMedoids(vector<sample*>* objects);
+    void groupClusters(std::vector<std::shared_ptr<cluster>>* clusters,
+                       std::vector<std::shared_ptr<cluster>>* target);
 
-    void generateClusteringFromMedoids(vector<sample*>* objects, vector<cluster>* target);
+    void setMedoids(std::vector<std::shared_ptr<cluster>>* newMedoids);
+
+    std::vector<std::shared_ptr<cluster> > getMedoids(std::vector<std::shared_ptr<sample> > *objects);
+
+    void generateClusteringFromMedoids(std::vector<std::shared_ptr<sample> > *objects,
+                                       std::vector<std::shared_ptr<cluster>>* target);
 
   protected:
 
-    int numberOfMedoids = 1,
-        medoidsFindingStrategy = OPTIMAL;
+    unsigned int  numberOfMedoids = 1;
+    int           medoidsFindingStrategy = OPTIMAL;
 
-    vector<cluster> clusters;
-    vector<cluster> medoids;
+    std::vector<std::shared_ptr<cluster>> clusters;
+    std::vector<std::shared_ptr<cluster>> medoids;
 
-    unordered_map<string, double> similarityData;
+    std::unordered_map<std::string, double> similarityData;
 
-    bool canGroupingBePerformed(std::vector<sample*>* objects);
-    void clusterObjects(std::vector<sample*> *objects);
-    int gatherSimilarityData();
-    void findOptimalMedoids();
-      void selectRandomMedoids();
-      int selectRandomMedoidsAccordingToDistance();
-        int addNewMedoidToVector(int medoidIndex);
-        int addNewMedoidAccordingToDistance(vector<int>* nonMedoidIndexes);
-          int fillWeights(vector<double> *weights, vector<int> *nonMedoidsIndexes);
-          int fillProbabilitiesFromWeights(vector<double> *weights, vector<double> *probabilities);
-      double countCost(vector<cluster> *potentialMedoids);
-        bool isMedoid(cluster* c, vector<cluster> *medoids);
-        int findClosestMedoidIndex(cluster *c, vector<cluster>* potentialMedoids);
-        double getClustersSimilarity(cluster *c1, cluster *c2);
-      void findPotentialBestMedoidConfiguration(vector<cluster> *potentialBestMedoids, double minCost);
-    void createClustersFromMedoids(vector<cluster>* target);
+    bool canGroupingBePerformed(std::vector<std::shared_ptr<sample> > *objects);
+    void clusterObjects(std::vector<std::shared_ptr<sample>> *objects);
+    int performGrouping(std::vector<std::shared_ptr<cluster>>* target);
+      int gatherSimilarityData();
+      void findOptimalMedoids();
+        void selectRandomMedoids();
+        int selectRandomMedoidsAccordingToDistance();
+          int addNewMedoidToVector(int medoidIndex);
+          int addNewMedoidAccordingToDistance(std::vector<int>* nonMedoidIndexes);
+            int fillWeights(std::vector<double> *weights,
+                            std::vector<int> *nonMedoidsIndexes);
+            int fillProbabilitiesFromWeights(std::vector<double> *weights,
+                                             std::vector<double> *probabilities);
+        double countCost(std::vector<std::shared_ptr<cluster>> *potentialMedoids);
+          bool isMedoid(cluster *c,
+                        std::vector<std::shared_ptr<cluster>> *medoids);
+          int findClosestMedoidIndex(cluster *c,
+                                     std::vector<std::shared_ptr<cluster>>* potentialMedoids);
+          double getClustersSimilarity(cluster *c1, cluster *c2);
+        void findPotentialBestMedoidConfiguration(std::vector<std::shared_ptr<cluster>> *potentialBestMedoids,
+                                                  double minCost);
+      void createClustersFromMedoids(std::vector<std::shared_ptr<cluster>>* target);
+
+      unsigned int setMedoidInWeightedCluster(std::shared_ptr<cluster> clus);
 };
 
 

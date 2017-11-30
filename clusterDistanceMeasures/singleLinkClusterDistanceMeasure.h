@@ -13,7 +13,8 @@ class singleLinkClusterDistanceMeasure : public clustersDistanceMeasure
 
   protected:
 
-    double findLowestDistance(vector<sample*> *firstClusterObjects, vector<sample*> *secondClusterObjects);
+    double findLowestDistance(std::vector<std::shared_ptr<sample>> *firstClusterObjects,
+                              std::vector<std::shared_ptr<sample>> *secondClusterObjects);
 };
 
 

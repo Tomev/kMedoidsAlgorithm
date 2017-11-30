@@ -3,18 +3,16 @@
 
 #include "string"
 
-using namespace std;
-
 class attributeData
 {
   public:
 
-    string getName() { return name; }
-    virtual string getType() = 0;
+    std::string getName() { return name; }
+    virtual std::string getType() = 0;
 
   protected:
 
-    string name;
+    std::string name;
 
 };
 

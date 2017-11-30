@@ -7,7 +7,7 @@
 class distanceBasedGroupingAlgorithm : public groupingAlgorithm
 {
   protected:
-    clustersDistanceMeasure* clusDistanceMeasure;
+    std::shared_ptr<clustersDistanceMeasure> clusDistanceMeasure;
 };
 
 #endif //K_MEDOIDALGORITHM_DISTANCEBASEDGROUPINGALGORITHM_H

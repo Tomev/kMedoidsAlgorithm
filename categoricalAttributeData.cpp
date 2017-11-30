@@ -4,14 +4,14 @@
 
 #include "categoricalAttributeData.h"
 
-categoricalAttributeData::categoricalAttributeData(string name) : name(name) {}
+categoricalAttributeData::categoricalAttributeData(std::string name) : name(name) {}
 
-string categoricalAttributeData::getType()
+std::string categoricalAttributeData::getType()
 {
   return "categorical";
 }
 
-string categoricalAttributeData::getName()
+std::string categoricalAttributeData::getName()
 {
   return attributeData::getName();
 }

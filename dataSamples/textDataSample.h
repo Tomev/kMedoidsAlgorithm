@@ -5,8 +5,6 @@
 
 #include "../groupingAlgorithm/sample.h"
 
-using namespace std;
-
 class textDataSample : public sample
 {
   public:

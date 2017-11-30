@@ -9,13 +9,13 @@
 class gowersNumericalAttributesDistanceMeasure : public attributesDistanceMeasure
 {
   public:
-    gowersNumericalAttributesDistanceMeasure(unordered_map<string, attributeData*> *attributesData);
+    gowersNumericalAttributesDistanceMeasure(std::unordered_map<std::string, attributeData*> *attributesData);
 
-    double countAttributesDistance(string firstAttributeValue, string secondAttributeValue);
+    double countAttributesDistance(std::string firstAttributeValue, std::string secondAttributeValue);
 
   protected:
 
-    unordered_map<string, numericalAttributeData*> numericalAttributesData;
+    std::unordered_map<std::string, numericalAttributeData*> numericalAttributesData;
 };
 
 

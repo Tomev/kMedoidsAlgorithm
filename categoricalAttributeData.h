@@ -7,14 +7,14 @@ class categoricalAttributeData : public attributeData
 {
   public:
 
-    categoricalAttributeData(string name);
+    categoricalAttributeData(std::string name);
 
-    string getType();
-    string getName();
+    std::string getType();
+    std::string getName();
 
   protected:
 
-    string name;
+    std::string name;
 
 };
 

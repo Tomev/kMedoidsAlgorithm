@@ -4,14 +4,14 @@
 
 #include "kMedoidsAlgorithm.h"
 
-kMedoidsAlgorithm::kMedoidsAlgorithm(int numberOfMedoids, clustersDistanceMeasure* clusDistanceMeasure,
+kMedoidsAlgorithm::kMedoidsAlgorithm(int numberOfMedoids, std::shared_ptr<clustersDistanceMeasure> clusDistanceMeasure,
                                      int medoidsFindingStrategy) :
   numberOfMedoids(numberOfMedoids), medoidsFindingStrategy(medoidsFindingStrategy)
 {
   this->clusDistanceMeasure = clusDistanceMeasure;
 }
 
-bool kMedoidsAlgorithm::canGroupingBePerformed(std::vector<sample*>* objects)
+bool kMedoidsAlgorithm::canGroupingBePerformed(std::vector<std::shared_ptr<sample>>* objects)
 {
   if(objects->size() < numberOfMedoids)
   {
@@ -28,13 +28,39 @@ bool kMedoidsAlgorithm::canGroupingBePerformed(std::vector<sample*>* objects)
   return true;
 }
 
-void kMedoidsAlgorithm::groupObjects(std::vector<sample*> *objects, std::vector<cluster>* target)
+void kMedoidsAlgorithm::groupObjects(std::vector<std::shared_ptr<sample>> *objects,
+                                     std::vector<std::shared_ptr<cluster> > *target)
 {
   if(!canGroupingBePerformed(objects)) return;
 
   clusterObjects(objects);
 
+  performGrouping(target);
+}
+
+void kMedoidsAlgorithm::groupClusters(std::vector<std::shared_ptr<cluster> > *clusters, std::vector<std::shared_ptr<cluster> > *target)
+{
+  this->clusters.clear();
+
+  for(std::shared_ptr<cluster> c : *clusters) this->clusters.push_back(c);
+
+  performGrouping(target);
+}
+
+int kMedoidsAlgorithm::performGrouping(std::vector<std::shared_ptr<cluster> > *target)
+{
+  int summaricWeight = 0;
+
+  for(std::shared_ptr<cluster> c : this->clusters)
+  {
+    summaricWeight += c.get()->getWeight();
+  }
+
+  std::cout << "Sum weight: " << summaricWeight << std::endl;
+
   gatherSimilarityData();
+
+  std::cout << "Similarity data gathered.\n";
 
   switch(medoidsFindingStrategy)
   {
@@ -49,28 +75,48 @@ void kMedoidsAlgorithm::groupObjects(std::vector<sample*> *objects, std::vector<
       findOptimalMedoids();
   }
 
-
   createClustersFromMedoids(target);
+
+  std::cout << "Setting medoids.\n";
+
+  for(std::shared_ptr<cluster> c : *target)
+    setMedoidInWeightedCluster(c);
+
+  std::cout << "Grouping finished.\nClusters:" << std::endl;
+
+  for(unsigned int i = 0; i < target->size(); ++i)
+  {
+    std::cout << i << ". cluster's size: " << target->at(i).get()->size()
+              << std::endl;
+  }
+
+  return target->size();
 }
 
-
-
-void kMedoidsAlgorithm::clusterObjects(std::vector<sample*> *objects)
+void kMedoidsAlgorithm::clusterObjects(std::vector<std::shared_ptr<sample>> *objects)
 {
-  for(int clusterNumber = 0; clusterNumber < objects->size(); ++clusterNumber)
-    clusters.push_back(cluster(clusterNumber+1, objects->at(clusterNumber)));
+  clusters.clear();
+
+  for(unsigned long clusterNumber = 0; clusterNumber < objects->size(); ++clusterNumber)
+  {
+    clusters.push_back(std::make_shared<cluster>(cluster(clusterNumber+1,
+                                                         objects->at(clusterNumber))));
+  }
 }
 
 int kMedoidsAlgorithm::gatherSimilarityData()
 {
   similarityData.clear();
 
-  for(int i = 0; i < clusters.size(); ++i)
+  for(unsigned int i = 0; i < clusters.size(); ++i)
   {
-    for (int j = i + 1; j < clusters.size(); ++j)
+    for (unsigned int j = i + 1; j < clusters.size(); ++j)
     {
-      string name = clusters[i].getClustersId() + "-" + clusters[j].getClustersId();
-      similarityData[name] = clusDistanceMeasure->countClustersDistance(&clusters[i], &clusters[j]);
+      std::string name =  clusters[i].get()->getClustersId() + "-" +
+                          clusters[j].get()->getClustersId();
+
+      similarityData[name] = clusDistanceMeasure->countClustersDistance(clusters[i].get(),
+                                                                        clusters[j].get());;
     }
   }
 
@@ -84,7 +130,7 @@ void kMedoidsAlgorithm::findOptimalMedoids()
 
   double lowestCost = countCost(&medoids);
 
-  vector<cluster> potentialBestMedoids;
+  std::vector<std::shared_ptr<cluster>> potentialBestMedoids;
 
   double potentialLowestCost;
 
@@ -104,24 +150,25 @@ void kMedoidsAlgorithm::findOptimalMedoids()
 
 void kMedoidsAlgorithm::selectRandomMedoids()
 {
+  medoids.clear();
+
   std::set<int> medoidsIndexes;
 
   // Randomize medoid indexes until required number is achieved.
   while(medoidsIndexes.size() != numberOfMedoids) medoidsIndexes.insert(rand() % clusters.size());
 
   for(int medoidsIndex : medoidsIndexes)
-  {
-    cluster c = clusters.at(medoidsIndex);
-    medoids.push_back(c);
-  }
+    medoids.push_back(clusters.at(medoidsIndex));
 }
 
 int kMedoidsAlgorithm::selectRandomMedoidsAccordingToDistance()
 {
-  // Create and fill vector of clusters indexes
-  vector<int> nonMedoidsIndexes;
+  medoids.clear();
 
-  for(int i = 0; i < clusters.size(); ++i)  nonMedoidsIndexes.push_back(i);
+  // Create and fill vector of clusters indexes
+  std::vector<int> nonMedoidsIndexes;
+
+  for(unsigned int i = 0; i < clusters.size(); ++i)  nonMedoidsIndexes.push_back(i);
 
   // Select first medoid at random (uniformly) and add it to vector
   int nonMedoidPosition = rand() % nonMedoidsIndexes.size(),
@@ -139,15 +186,14 @@ int kMedoidsAlgorithm::selectRandomMedoidsAccordingToDistance()
 
 int kMedoidsAlgorithm::addNewMedoidToVector(int medoidIndex)
 {
-  cluster newMedoid = clusters.at(medoidIndex);
-  medoids.push_back(newMedoid);
+  medoids.push_back(clusters.at(medoidIndex));
 
   return medoids.size();
 }
 
-int kMedoidsAlgorithm::addNewMedoidAccordingToDistance(vector<int>* nonMedoidIndexes)
+int kMedoidsAlgorithm::addNewMedoidAccordingToDistance(std::vector<int>* nonMedoidIndexes)
 {
-  vector<double> weights, probabilities;
+  std::vector<double> weights, probabilities;
 
   fillWeights(&weights, nonMedoidIndexes);
   fillProbabilitiesFromWeights(&weights, &probabilities);
@@ -164,7 +210,7 @@ int kMedoidsAlgorithm::addNewMedoidAccordingToDistance(vector<int>* nonMedoidInd
   return 0;
 }
 
-int kMedoidsAlgorithm::fillWeights(vector<double> *weights, vector<int> *nonMedoidsIndexes)
+int kMedoidsAlgorithm::fillWeights(std::vector<double> *weights, std::vector<int> *nonMedoidsIndexes)
 {
   double weight;
 
@@ -174,8 +220,9 @@ int kMedoidsAlgorithm::fillWeights(vector<double> *weights, vector<int> *nonMedo
   {
     weight = 0;
 
-    for(cluster medoid : medoids)
-      weight += this->clusDistanceMeasure->countClustersDistance(&medoid, &clusters.at(nonMedoidIndex));
+    for(std::shared_ptr<cluster> medoid : medoids)
+      weight += this->clusDistanceMeasure->countClustersDistance(medoid.get(),
+                                                                 clusters.at(nonMedoidIndex).get());
 
     weight /= medoids.size();
     weights->push_back(weight);
@@ -184,7 +231,7 @@ int kMedoidsAlgorithm::fillWeights(vector<double> *weights, vector<int> *nonMedo
   return weights->size();
 }
 
-int kMedoidsAlgorithm::fillProbabilitiesFromWeights(vector<double> *weights, vector<double> *probabilities)
+int kMedoidsAlgorithm::fillProbabilitiesFromWeights(std::vector<double> *weights, std::vector<double> *probabilities)
 {
   probabilities->clear();
 
@@ -196,7 +243,7 @@ int kMedoidsAlgorithm::fillProbabilitiesFromWeights(vector<double> *weights, vec
 
   double probability;
 
-  for(int i = 1; i < weights->size(); ++i)
+  for(unsigned int i = 1; i < weights->size(); ++i)
   {
     probability = probabilities->at(i - 1);
     probability += weights->at(i) / weightsSum;
@@ -206,43 +253,39 @@ int kMedoidsAlgorithm::fillProbabilitiesFromWeights(vector<double> *weights, vec
   return probabilities->size();
 }
 
-double kMedoidsAlgorithm::countCost(vector<cluster> *potentialMedoids)
+double kMedoidsAlgorithm::countCost(std::vector<std::shared_ptr<cluster> > *potentialMedoids)
 {
   double cost = 0;
 
-  for(cluster c : clusters)
+  for(std::shared_ptr<cluster> c : clusters)
   {
-    if(!isMedoid(&c, potentialMedoids))
+    if(!isMedoid(c.get(), potentialMedoids))
     {
-      int closestMedoidIndex = findClosestMedoidIndex(&c, potentialMedoids);
-
-      //cost += clusDistanceMeasure->countClustersDistance(&c, &(potentialMedoids->at(closestMedoidIndex)));
-      cost += getClustersSimilarity(&c, &(potentialMedoids->at(closestMedoidIndex)));
+      int closestMedoidIndex = findClosestMedoidIndex(c.get(), potentialMedoids);
+      cost += getClustersSimilarity(c.get(), potentialMedoids->at(closestMedoidIndex).get());
     }
   }
 
   return cost;
 }
 
-bool kMedoidsAlgorithm::isMedoid(cluster *c, vector<cluster>* medoids)
+bool kMedoidsAlgorithm::isMedoid(cluster *c, std::vector<std::shared_ptr<cluster> > *medoids)
 {
-  for(cluster medoid : *medoids)
-    if(c->getClustersId() == medoid.getClustersId()) return true;
+  for(std::shared_ptr<cluster> medoid : *medoids)
+    if(c->getClustersId() == medoid.get()->getClustersId()) return true;
 
   return false;
 }
 
-int kMedoidsAlgorithm::findClosestMedoidIndex(cluster *c, vector<cluster>* potentialMedoids)
+int kMedoidsAlgorithm::findClosestMedoidIndex(cluster *c, std::vector<std::shared_ptr<cluster> > *potentialMedoids)
 {
   int closestMedoidIndex = 0;
-  double  //minDistance = clusDistanceMeasure->countClustersDistance(&(potentialMedoids->at(0)), c),
-          minDistance = getClustersSimilarity(&(potentialMedoids->at(0)), c),
+  double  minDistance = getClustersSimilarity(c, potentialMedoids->at(0).get()),
           distance;
 
-  for(int medoidIndex = 1; medoidIndex < potentialMedoids->size(); ++medoidIndex)
+  for(unsigned int medoidIndex = 1; medoidIndex < potentialMedoids->size(); ++medoidIndex)
   {
-    //distance = clusDistanceMeasure->countClustersDistance(&(potentialMedoids->at(medoidIndex)), c);
-    distance = getClustersSimilarity(&(potentialMedoids->at(medoidIndex)), c);
+    distance = getClustersSimilarity(c, potentialMedoids->at(medoidIndex).get());
 
     if(distance < minDistance)
     {
@@ -256,39 +299,47 @@ int kMedoidsAlgorithm::findClosestMedoidIndex(cluster *c, vector<cluster>* poten
 
 double kMedoidsAlgorithm::getClustersSimilarity(cluster *c1, cluster *c2)
 {
-  string name = c1->getClustersId() + "-" + c2->getClustersId();
+  std::string name =  c1->getMedoid()->getClustersId() + "-" +
+                      c2->getMedoid()->getClustersId();
 
   auto similarityIterator = similarityData.find(name);
 
-  if(similarityIterator == similarityData.end()) name = c2->getClustersId() + "-" + c1->getClustersId();
+  if(similarityIterator == similarityData.end())
+    name =  c2->getMedoid()->getClustersId() + "-" +
+            c1->getMedoid()->getClustersId();
+
+  similarityIterator = similarityData.find(name);
+
+  if(similarityIterator == similarityData.end())
+    return -1;
 
   return similarityData[name];
 }
 
-void kMedoidsAlgorithm::findPotentialBestMedoidConfiguration(vector<cluster> *potentialBestMedoids, double minCost)
+void kMedoidsAlgorithm::findPotentialBestMedoidConfiguration(std::vector<std::shared_ptr<cluster> > *potentialBestMedoids, double minCost)
 {
   double minimalCost = minCost, potentialMinimalCost;
-  vector<cluster> currentBestConfiguration = medoids;
+  std::vector<std::shared_ptr<cluster>> currentBestConfiguration = medoids;
 
   // For each medoid
-  for(int medoidIndex = 0; medoidIndex < medoids.size(); ++medoidIndex)
+  for(unsigned int medoidIndex = 0; medoidIndex < medoids.size(); ++medoidIndex)
   {
-    cout << "Medoid index: " << medoidIndex << endl;
+    std::cout << "Medoid index: " << medoidIndex << std::endl;
 
     // Exclude this medoid from medoids list
     *potentialBestMedoids = medoids;
     potentialBestMedoids->erase(potentialBestMedoids->begin()+medoidIndex);
 
     // Substitute missing medoid with each non-medoid cluster and count cost
-    for(cluster c : clusters)
+    for(std::shared_ptr<cluster> c : clusters)
     {
-      if (!isMedoid(&c, &medoids)) {
+      if (!isMedoid(c.get(), &medoids)) {
         potentialBestMedoids->push_back(c);
         potentialMinimalCost = countCost(potentialBestMedoids);
 
         if (potentialMinimalCost < minimalCost) {
           minimalCost = potentialMinimalCost;
-          cout << minimalCost << endl;
+          std::cout << minimalCost << std::endl;
           currentBestConfiguration.clear();
           currentBestConfiguration = *potentialBestMedoids;
         }
@@ -302,33 +353,81 @@ void kMedoidsAlgorithm::findPotentialBestMedoidConfiguration(vector<cluster> *po
   *potentialBestMedoids = currentBestConfiguration;
 }
 
-void kMedoidsAlgorithm::createClustersFromMedoids(vector<cluster> *target)
+void kMedoidsAlgorithm::createClustersFromMedoids(std::vector<std::shared_ptr<cluster> > *target)
 {
   // Ensure that target vector is empty.
   target->clear();
 
+  long index = 0;
+
   // Create outer clusters.
-  for(int medoidIndex = 0; medoidIndex < medoids.size(); ++medoidIndex)
+  for(std::shared_ptr<cluster> medoid : medoids)
   {
-    target->push_back(cluster(medoidIndex));
-    target->back().addSubcluster(medoids.at(medoidIndex));
-    target->back().setRepresentative(medoids.at(medoidIndex).getRepresentative());
+    target->push_back(std::make_shared<cluster>(cluster(++index, medoid.get()->getObject())));
+    target->back().get()->setWeight(0);
+    target->back().get()->addSubcluster(medoid);
+    target->back().get()->setRepresentative(medoid.get()->getRepresentative());
+    target->back().get()->setMedoid(target->back());
   }
 
   // Assign objects to outer clusters.
   int closestMedoidIndex;
 
-  for(cluster c : clusters)
+  for(std::shared_ptr<cluster> c : clusters)
   {
-    if(!isMedoid(&c, &medoids))
+    if(!isMedoid(c.get(), &medoids))
     {
-      closestMedoidIndex = findClosestMedoidIndex(&c, &medoids);
-      target->at(closestMedoidIndex).addSubcluster(c);
+      closestMedoidIndex = findClosestMedoidIndex(c->getMedoid(), &medoids);
+      target->at(closestMedoidIndex).get()->addSubcluster(c);
     }
   }
 }
 
-void kMedoidsAlgorithm::setMedoids(vector<cluster> *newMedoids)
+unsigned int kMedoidsAlgorithm::setMedoidInWeightedCluster(std::shared_ptr<cluster> clus)
+{
+  std::vector<std::shared_ptr<cluster>> subclusters;
+  clus.get()->getSubclusters(&subclusters);
+
+  if(subclusters.size() == 0) return 0;
+
+  // Initialize on first subcluster being medoid
+  double minCost = 0, cost;
+  std::shared_ptr<cluster> medoid = subclusters.at(0);
+  unsigned int i;
+
+  for(i = 1; i < subclusters.size(); ++i)
+    minCost += clusDistanceMeasure->countClustersDistance(subclusters.at(0).get(),
+                                                          subclusters.at(i).get())
+               * subclusters.at(0).get()->getWeight() * subclusters.at(i).get()->getWeight();
+
+  // Now for every other subcluster
+  for(i = 1; i < subclusters.size(); ++i)
+  {
+    cost = 0;
+
+    for(unsigned int j = 0; j < subclusters.size(); ++j)
+    {
+      if(j == i) continue;
+
+      cost += clusDistanceMeasure->countClustersDistance(subclusters.at(j).get(),
+                                                        subclusters.at(i).get())
+              * subclusters.at(j).get()->getWeight() * subclusters.at(i).get()->getWeight();
+    }
+
+    if(cost < minCost)
+    {
+      minCost = cost;
+      medoid = subclusters.at(i);
+    }
+
+  }
+
+  clus.get()->setMedoid(medoid);
+
+  return i;
+}
+
+void kMedoidsAlgorithm::setMedoids(std::vector<std::shared_ptr<cluster> > *newMedoids)
 {
   if(newMedoids != nullptr)
   {
@@ -339,7 +438,7 @@ void kMedoidsAlgorithm::setMedoids(vector<cluster> *newMedoids)
   }
 }
 
-vector<cluster> kMedoidsAlgorithm::getMedoids(vector<sample*>* objects)
+std::vector<std::shared_ptr<cluster>> kMedoidsAlgorithm::getMedoids(std::vector<std::shared_ptr<sample>>* objects)
 {
   if(medoids.size() != numberOfMedoids)
   {
@@ -350,7 +449,7 @@ vector<cluster> kMedoidsAlgorithm::getMedoids(vector<sample*>* objects)
   return medoids;
 }
 
-void kMedoidsAlgorithm::generateClusteringFromMedoids(vector<sample *> *objects, vector<cluster> *target)
+void kMedoidsAlgorithm::generateClusteringFromMedoids(std::vector<std::shared_ptr<sample>> *objects, std::vector<std::shared_ptr<cluster> > *target)
 {
   if(!canGroupingBePerformed(objects)) return;
 
@@ -360,11 +459,4 @@ void kMedoidsAlgorithm::generateClusteringFromMedoids(vector<sample *> *objects,
 
   createClustersFromMedoids(target);
 }
-
-
-
-
-
-
-
 

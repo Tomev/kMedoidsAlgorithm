@@ -3,14 +3,13 @@
 
 #include "cluster.h"
 
-cluster::cluster(long index) : index(index)
-{
-  this->object = NULL;
-}
+cluster::cluster(long index) : index(index) {}
 
-cluster::cluster(long index, sample *object) : index(index), object(object)
+cluster::cluster(long index, std::shared_ptr<sample> object) : index(index),
+  object(object)
 {
   findRepresentative();
+  this->setWeight(1);
 }
 
 bool cluster::representsObject()
@@ -25,35 +24,36 @@ std::string cluster::getClustersId()
   if(this->representsObject()) id = "O"; // For "object"
   else id = "C"; // For "cluster"
 
-  id +=  to_string(index);
+  id +=  std::to_string(index);
 
   return id;
 }
 
-bool cluster::hasSubcluster(cluster *c)
+bool cluster::hasSubcluster(std::shared_ptr<cluster> c)
 {
-  for(cluster subcluster : subclusters)
+  for(std::shared_ptr<cluster> subcluster : subclusters)
   {
-    if(c->getClustersId() == subcluster.getClustersId()) return true;
-    if(subcluster.hasSubcluster(c)) return true;
+    if(c.get()->getClustersId() == subcluster.get()->getClustersId()) return true;
+    if(subcluster.get()->hasSubcluster(c)) return true;
   }
 
   return false;
 }
 
-sample *cluster::getObject()
+std::shared_ptr<sample> cluster::getObject()
 {
   if(representsObject()) return object;
+  //if(representsObject()) return object.get();
   else std::cout << "Cluster doesn't represent an object. Returning nullptr.\n";
 
   return nullptr;
 }
 
-void cluster::getObjects(vector<sample *>* target)
+void cluster::getObjects(std::vector<std::shared_ptr<sample>>* target)
 {
   if(target == nullptr)
   {
-    cout << "Target is a null pointer. Cannot return clusters objects.\n";
+    std::cout << "Target is a null pointer. Cannot return clusters objects.\n";
     return;
   }
 
@@ -64,10 +64,18 @@ void cluster::getObjects(vector<sample *>* target)
     return;
   }
 
-  for(cluster c : subclusters) c.getObjects(target);
+  for(std::shared_ptr<cluster> c : subclusters) c.get()->getObjects(target);
 }
 
-void cluster::addSubcluster(cluster subcluster)
+void cluster::getSubclusters(std::vector<std::shared_ptr<cluster> > *target)
+{
+  target->clear();
+
+  for(std::shared_ptr<cluster> c : subclusters)
+    target->push_back(c);
+}
+
+void cluster::addSubcluster(std::shared_ptr<cluster> subcluster)
 {
   subclusters.push_back(subcluster);
 }
@@ -79,6 +87,36 @@ long cluster::size()
   return subclusters.size();
 }
 
+void cluster::setWeight(long weight)
+{
+  this->weight = weight;
+}
+
+long cluster::getWeight()
+{
+  if(this->weight != 0) return this->weight;
+
+  long w = this->weight;
+
+  for(std::shared_ptr<cluster> c : subclusters) w += c.get()->getWeight();
+
+  return w;
+}
+
+cluster* cluster::getMedoid()
+{
+  if(representsObject()) return this;
+
+  //return this->medoid;
+  return this->medoid.get();
+}
+
+void cluster::setMedoid(std::shared_ptr<cluster> newMedoid)
+{
+  medoid = newMedoid;
+  //this->medoid = newMedoid;
+}
+
 void cluster::setRepresentative(sample *newRepresentative)
 {
   representative = newRepresentative;
@@ -86,14 +124,10 @@ void cluster::setRepresentative(sample *newRepresentative)
 
 void cluster::findRepresentative()
 {
-  if(representsObject()) representative = object;
+  if(representsObject()) representative = object.get();
 }
 
 sample *cluster::getRepresentative()
 {
   return representative;
 }
-
-
-
-

@@ -5,7 +5,7 @@
 customObjectsDistanceMeasure::customObjectsDistanceMeasure(
   attributesDistanceMeasure *categoricalAttributesDistanceMeasure,
   attributesDistanceMeasure *numericalAttributesDistanceMeasure,
-  unordered_map<string, attributeData*> *attributesData)
+  std::unordered_map<std::string, attributeData*> *attributesData)
 {
   this->categoricalAttributesDistanceMeasure = categoricalAttributesDistanceMeasure;
   this->numericalAttributesDistanceMeasure = numericalAttributesDistanceMeasure;
@@ -22,7 +22,7 @@ double customObjectsDistanceMeasure::countObjectsDistance(sample *sample1, sampl
   double result = 0.0;
   attributesDistanceMeasure* currentMeasure;
 
-  for(string attributeName : commonAttributes)
+  for(std::string attributeName : commonAttributes)
   {
     if(attributesData->at(attributeName)->getType() == "numerical")
       currentMeasure = numericalAttributesDistanceMeasure;
@@ -44,12 +44,12 @@ void customObjectsDistanceMeasure::findCommonAttributes(sample *sample1, sample 
 {
   commonAttributes.clear();
 
-  vector<string> firstSampleAttributes, secondSampleAttributes;
+  std::vector<std::string> firstSampleAttributes, secondSampleAttributes;
 
   for(auto nameValue : sample1->attributesValues) firstSampleAttributes.push_back(nameValue.first);
   for(auto nameValue : sample2->attributesValues) secondSampleAttributes.push_back(nameValue.first);
 
-  for(string attributeName : firstSampleAttributes)
+  for(std::string attributeName : firstSampleAttributes)
   {
     if(find(secondSampleAttributes.begin(), secondSampleAttributes.end(), attributeName) != firstSampleAttributes.end())
     {

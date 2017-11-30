@@ -5,7 +5,7 @@
 
 class smdNumericalAttributesDistanceMeasure : public attributesDistanceMeasure
 {
-  double countAttributesDistance(string firstAttributeValue, string secondAttributeValue);
+  double countAttributesDistance(std::string firstAttributeValue, std::string secondAttributeValue);
 };
 
 #endif //K_MEDOIDALGORITHM_SMDNUMERICALATTRIBUTESDISTANCEMEASURE_H

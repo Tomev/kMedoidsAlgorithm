@@ -2,6 +2,7 @@
 #define K_MEDOIDALGORITHM_INTERCLUSTERDISTANCEMEASURE_H
 
 #include <vector>
+#include <unordered_map>
 
 #include "groupingAlgorithm/sample.h"
 #include "attributesDistanceMeasure.h"
@@ -15,12 +16,12 @@ class objectsDistanceMeasure
 
   protected:
 
-    unordered_map<string, attributeData*>* attributesData;
+    std::unordered_map<std::string, attributeData*>* attributesData;
 
     attributesDistanceMeasure* categoricalAttributesDistanceMeasure;
     attributesDistanceMeasure* numericalAttributesDistanceMeasure;
 
-    vector<string> commonAttributes;
+    std::vector<std::string> commonAttributes;
 
     virtual void findCommonAttributes(sample* s1, sample* s2) = 0;
 };

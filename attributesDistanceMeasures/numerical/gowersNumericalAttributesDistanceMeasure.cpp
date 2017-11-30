@@ -2,7 +2,7 @@
 #include "gowersNumericalAttributesDistanceMeasure.h"
 
 gowersNumericalAttributesDistanceMeasure::gowersNumericalAttributesDistanceMeasure(
-  unordered_map<string, attributeData *> *attributesData)
+  std::unordered_map<std::string, attributeData *> *attributesData)
 {
   // Store only numerical attributes data
   for(auto nameData : *attributesData)
@@ -13,7 +13,7 @@ gowersNumericalAttributesDistanceMeasure::gowersNumericalAttributesDistanceMeasu
 }
 
 double gowersNumericalAttributesDistanceMeasure::countAttributesDistance
-  (string firstAttributeValue, string secondAttributeValue)
+  (std::string firstAttributeValue, std::string secondAttributeValue)
 {
   // Check if minimal and maximal values for this attribute are equal. If so distance is 0.
   if(numericalAttributesData.at(currentAttributeName)->getMinMaxDifference() <= 1e-5) return 0;

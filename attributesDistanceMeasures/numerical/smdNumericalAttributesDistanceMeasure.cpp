@@ -1,7 +1,7 @@
 #include "smdNumericalAttributesDistanceMeasure.h"
 
 double smdNumericalAttributesDistanceMeasure::countAttributesDistance(
-  string firstAttributeValue, string secondAttributeValue)
+  std::string firstAttributeValue, std::string secondAttributeValue)
 {
   // Return 0 if they're identical.
   if(firstAttributeValue == secondAttributeValue) return 0;

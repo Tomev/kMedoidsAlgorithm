@@ -1,7 +1,7 @@
 #include "smdCategoricalAttributesDistanceMeasure.h"
 
 double smdCategoricalAttributesDistanceMeasure::countAttributesDistance
-  (string firstAttributeValue, string secondAttributeValue)
+  (std::string firstAttributeValue, std::string secondAttributeValue)
 {
   if (firstAttributeValue == secondAttributeValue) return 0;
 

@@ -9,22 +9,20 @@
 
 #include "groupingAlgorithm/sample.h"
 
-using namespace std;
-
 class dataParser
 {
   public:
 
     virtual void parseData(void *target) = 0;
-    virtual int addDatumToContainer(vector<sample*> *container) = 0;
-    virtual void writeDatumOnPosition(vector<sample*> *container, int position) = 0;
-    virtual void setAttributesOrder(vector<string> *attributesOrder) = 0;
+    virtual int addDatumToContainer(std::vector<sample*> *container) = 0;
+    virtual void writeDatumOnPosition(std::vector<sample*> *container, int position) = 0;
+    virtual void setAttributesOrder(std::vector<std::string> *attributesOrder) = 0;
 
     void *buffer;
 
   protected:
 
-    vector<string> *attributesOrder;
+    std::vector<std::string> *attributesOrder;
 };
 
 

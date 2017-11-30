@@ -18,25 +18,23 @@
 #include "../dataSamples/textDataSample.h"
 #include "../attributeData.h"
 
-using namespace std;
-
 class textDataParser : public dataParser
 {
 
   public:
 
-    textDataParser(unordered_map<string, attributeData*> *attributesData);
+    textDataParser(std::unordered_map<std::string, attributeData*> *attributesData);
 
     void parseData(void *target);
     int addDatumToContainer(std::vector<sample*> *container);
     void writeDatumOnPosition(std::vector<sample*> *container, int position);
 
-    void setAttributesOrder(vector<string> *attributesOrder);
+    void setAttributesOrder(std::vector<std::string> *attributesOrder);
 
   protected:
 
-    vector<string> *attributesOrder;
-    unordered_map<string, attributeData*>* attributesData;
+    std::vector<std::string> *attributesOrder;
+    std::unordered_map<std::string, attributeData*>* attributesData;
 
     void updateAttributesData(textDataSample *newSample);
 
