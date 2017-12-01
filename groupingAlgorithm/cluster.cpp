@@ -82,9 +82,11 @@ void cluster::addSubcluster(std::shared_ptr<cluster> subcluster)
 
 long cluster::size()
 {
+  if(subclusters.size() != 0) return subclusters.size();
+
   if(representsObject()) return 1;
 
-  return subclusters.size();
+  return 0;
 }
 
 void cluster::setWeight(long weight)
