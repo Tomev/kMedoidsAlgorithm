@@ -49,12 +49,10 @@ void kMedoidsAlgorithm::groupClusters(std::vector<std::shared_ptr<cluster> > *cl
 
 int kMedoidsAlgorithm::performGrouping(std::vector<std::shared_ptr<cluster> > *target)
 {
-  int summaricWeight = 0;
+  double summaricWeight = 0.0;
 
   for(std::shared_ptr<cluster> c : this->clusters)
-  {
     summaricWeight += c.get()->getWeight();
-  }
 
   std::cout << "Sum weight: " << summaricWeight << std::endl;
 

@@ -5,7 +5,7 @@
 #include "objectsDistanceMeasure.h"
 #include "clustersDistanceMeasure.h"
 
-#include "unordered_map"
+#include <unordered_map>
 
 enum medoidsFindingStrategy
 {
@@ -39,6 +39,8 @@ class kMedoidsAlgorithm : public distanceBasedGroupingAlgorithm
 
     unsigned int  numberOfMedoids = 1;
     int           medoidsFindingStrategy = OPTIMAL;
+
+    time_t countStart;
 
     std::vector<std::shared_ptr<cluster>> clusters;
     std::vector<std::shared_ptr<cluster>> medoids;
