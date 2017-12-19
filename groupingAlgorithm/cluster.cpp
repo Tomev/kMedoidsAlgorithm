@@ -89,12 +89,12 @@ long cluster::size()
   return 0;
 }
 
-void cluster::setWeight(long weight)
+void cluster::setWeight(double weight)
 {
   this->weight = weight;
 }
 
-long cluster::getWeight()
+double cluster::getWeight()
 {
   if(this->weight != 0) return this->weight;
 

@@ -27,8 +27,8 @@ class cluster
 
     long size();
 
-    void setWeight(long weight);
-    long getWeight();
+    void setWeight(double weight);
+    double getWeight();
 
     cluster *getMedoid();
     void setMedoid(std::shared_ptr<cluster> newMedoid);
@@ -40,7 +40,7 @@ class cluster
   protected:
 
     long index;
-    long weight = 0;
+    double weight = 0;
 
     std::shared_ptr<sample> object;
     sample* representative;
