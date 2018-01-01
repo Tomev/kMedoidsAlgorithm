@@ -133,3 +133,14 @@ sample *cluster::getRepresentative()
 {
   return representative;
 }
+
+long cluster::setTimestamp(long timestamp)
+{
+  this->timestamp = timestamp;
+  return this->timestamp;
+}
+
+long cluster::getTimestamp()
+{
+  return this->timestamp;
+}

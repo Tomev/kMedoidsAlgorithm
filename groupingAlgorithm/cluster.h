@@ -37,6 +37,9 @@ class cluster
     void findRepresentative();
     sample* getRepresentative();
 
+    long setTimestamp(long timestamp);
+    long getTimestamp();
+
   protected:
 
     long index;
