@@ -41,13 +41,13 @@ class cluster
 
     long index;
     double weight = 0;
+    long timestamp = 0;
 
     std::shared_ptr<sample> object;
     sample* representative;
     std::shared_ptr<cluster> medoid;
 
     std::vector<std::shared_ptr<cluster>> subclusters;
-
 
 };
 
