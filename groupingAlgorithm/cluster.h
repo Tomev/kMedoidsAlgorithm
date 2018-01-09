@@ -43,7 +43,7 @@ class cluster
   protected:
 
     long index;
-    double weight = 0;
+    double weight = 1;
     long timestamp = 0;
 
     std::shared_ptr<sample> object;

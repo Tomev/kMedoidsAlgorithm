@@ -86,6 +86,8 @@ int kMedoidsAlgorithm::performGrouping(std::vector<std::shared_ptr<cluster> > *t
   {
     std::cout << i << ". cluster's size: " << target->at(i).get()->size()
               << std::endl;
+    std::cout << i << ". cluster's weight: " << target->at(i)->getWeight()
+              << std::endl;
   }
 
   return target->size();

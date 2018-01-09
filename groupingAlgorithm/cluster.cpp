@@ -96,11 +96,11 @@ void cluster::setWeight(double weight)
 
 double cluster::getWeight()
 {
-  if(this->weight != 0) return this->weight;
+  if(subclusters.size() == 0) return weight;
 
-  long w = this->weight;
+  double w = 0;
 
-  for(std::shared_ptr<cluster> c : subclusters) w += c.get()->getWeight();
+  for(std::shared_ptr<cluster> c : subclusters) w += c->getWeight();
 
   return w;
 }
