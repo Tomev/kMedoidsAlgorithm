@@ -40,6 +40,8 @@ class cluster
     long setTimestamp(long timestamp);
     long getTimestamp();
 
+    long positiveTemporalDerivativeTimesInARow = 0;
+
   protected:
 
     long index;
