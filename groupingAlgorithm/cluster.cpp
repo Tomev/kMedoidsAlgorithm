@@ -3,7 +3,15 @@
 
 #include "cluster.h"
 
+cluster::cluster(){}
+
 cluster::cluster(long index) : index(index) {}
+
+cluster::cluster(std::shared_ptr<sample> object) : object(object)
+{
+  findRepresentative();
+  this->setWeight(1);
+}
 
 cluster::cluster(long index, std::shared_ptr<sample> object) : index(index),
   object(object)

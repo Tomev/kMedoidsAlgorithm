@@ -11,7 +11,9 @@ class cluster
 {
   public:
 
+    cluster();
     cluster(long index);
+    cluster(std::shared_ptr<sample> object);
     cluster(long index, std::shared_ptr<sample> object);
 
     bool representsObject();
