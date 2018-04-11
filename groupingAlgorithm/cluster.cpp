@@ -152,3 +152,18 @@ long cluster::getTimestamp()
 {
   return this->timestamp;
 }
+
+void cluster::countVariation()
+{
+  std::vector<std::shared_ptr<sample>> objects;
+  getObjects(&objects);
+
+  if(objects.size() == 1) variation = 0;
+
+
+}
+
+std::vector<double> cluster::getVariation()
+{
+  return variation;
+}

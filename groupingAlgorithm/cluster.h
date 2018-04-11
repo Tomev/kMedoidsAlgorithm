@@ -42,6 +42,9 @@ class cluster
     long setTimestamp(long timestamp);
     long getTimestamp();
 
+    void countVariation();
+    std::vector<double> getVariation();
+
     long positiveTemporalDerivativeTimesInARow = 0;
 
   protected:
@@ -49,6 +52,7 @@ class cluster
     long index;
     double weight = 1;
     long timestamp = 0;
+    std::vector<double> variation;
 
     std::shared_ptr<sample> object;
     sample* representative;
