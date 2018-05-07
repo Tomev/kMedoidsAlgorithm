@@ -65,14 +65,14 @@ void cluster::getObjects(std::vector<std::shared_ptr<sample>>* target)
     return;
   }
 
-  // Check if cluster is singular object
-  if(this->representsObject())
+  if(subclusters.size() > 0) // If it has subcluster get it's subclusters objects
+  {
+    for(std::shared_ptr<cluster> c : subclusters) c.get()->getObjects(target);
+  }
+  else if(this->representsObject()) // Check if cluster is singular object
   {
     target->push_back(this->getObject());
-    return;
-  }
-
-  for(std::shared_ptr<cluster> c : subclusters) c.get()->getObjects(target);
+  }  
 }
 
 void cluster::getSubclusters(std::vector<std::shared_ptr<cluster> > *target)
