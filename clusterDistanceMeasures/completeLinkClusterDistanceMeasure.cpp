@@ -15,6 +15,9 @@ double completeLinkClusterDistanceMeasure::countClustersDistance(cluster *cluste
   cluster1->getObjects(&firstClusterObjects);
   cluster2->getObjects(&secondClusterObjects);
 
+  if(firstClusterObjects.size() == 0 || secondClusterObjects.size() == 0)
+    std::cout << "At least one of given clusters has no objects.";
+
   //std::cout << "Cluster distance measure: Got objects.\n";
 
   double result = findHighestDistance(&firstClusterObjects, &secondClusterObjects);
@@ -26,7 +29,7 @@ double completeLinkClusterDistanceMeasure::findHighestDistance(
   std::vector<std::shared_ptr<sample>> *firstClusterObjects, std::vector<std::shared_ptr<sample>> *secondClusterObjects)
 {
   // Ensure that distance is normalized to [0,1]
-  double maxDistance = 0, distance;
+  double maxDistance = 0.0, distance = 0.0;
 
   for(std::shared_ptr<sample> firstClusterObject : *firstClusterObjects)
   {
@@ -40,7 +43,11 @@ double completeLinkClusterDistanceMeasure::findHighestDistance(
         continue;
       }
 
-      if(distance < 0) std::cout << "Distance < 0";
+      if(distance < 0)
+      {
+        std::cout << "Distance < 0";
+        continue;
+      }
 
       if(distance > maxDistance) maxDistance = distance;
     }
