@@ -1,7 +1,7 @@
 #ifndef K_MEDOIDALGORITHM_ATTRIBUTEDATA_H
 #define K_MEDOIDALGORITHM_ATTRIBUTEDATA_H
 
-#include "string"
+#include <string>
 
 class attributeData
 {
