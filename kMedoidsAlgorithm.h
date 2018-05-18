@@ -7,16 +7,16 @@
 
 #include <unordered_map>
 
-enum medoidsFindingStrategy
-{
-  OPTIMAL = 0,
-  RANDOM = 1,
-  RANDOM_ACCORDING_TO_DISTANCE = 2
-};
-
 class kMedoidsAlgorithm : public distanceBasedGroupingAlgorithm
 {
   public:
+
+    enum medoidsFindingStrategy
+    {
+      OPTIMAL = 0,
+      RANDOM = 1,
+      RANDOM_ACCORDING_TO_DISTANCE = 2
+    };
 
     kMedoidsAlgorithm(  int numberOfMedoids,
                         std::shared_ptr<clustersDistanceMeasure> clusDistanceMeasure,
