@@ -1,5 +1,6 @@
 #include <c++/clocale>
 #include <c++/iostream>
+#include <math.h>
 
 #include "cluster.h"
 
@@ -243,4 +244,29 @@ void cluster::findMeanFromSubclusters()
 void cluster::findVariation()
 {
   if(mean.get() == nullptr) findMean();
+  variation.clear();
+
+  double summaricWeight = getWeight();
+  double updatedVariationValue = 0;
+
+  // Initialize variation
+  for(auto kv : mean->attributesValues)
+    variation[kv.first] = 0;
+
+  for(std::shared_ptr<cluster> sc : subclusters)
+  {
+    for(auto kv : sc->getObject()->attributesValues)
+    {
+      if((*(mean->attributesData))[kv.first]->getType() == "numeric")
+      {
+        updatedVariationValue = std::stod(kv.second);
+        updatedVariationValue -= std::stod(mean->attributesValues[kv.first]);
+        updatedVariationValue = pow(updatedVariationValue, 2);
+        updatedVariationValue *= sc->getWeight();
+        updatedVariationValue /= summaricWeight;
+        updatedVariationValue += variation[kv.first];
+        variation[kv.first] = updatedVariationValue;
+      }
+    }
+  }
 }
