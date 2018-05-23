@@ -1,5 +1,6 @@
 #include <c++/clocale>
 #include <c++/iostream>
+#include <math.h>
 
 #include "cluster.h"
 
@@ -127,6 +128,25 @@ void cluster::setMedoid(std::shared_ptr<cluster> newMedoid)
   //this->medoid = newMedoid;
 }
 
+std::shared_ptr<sample> cluster::getMean()
+{
+  if(mean.get() == nullptr) findMean();
+  return mean;
+}
+
+void cluster::setMean(std::shared_ptr<sample> newMean)
+{
+  mean = newMean;
+}
+
+std::unordered_map<std::string, double> cluster::getVariation()
+{
+  if(representsObject()) return variation;
+  else if(variation.size() == 0) findVariation();
+
+  return variation;
+}
+
 void cluster::setRepresentative(sample *newRepresentative)
 {
   representative = newRepresentative;
@@ -151,4 +171,102 @@ long cluster::setTimestamp(long timestamp)
 long cluster::getTimestamp()
 {
   return this->timestamp;
+}
+
+void cluster::findMean()
+{
+  if(this->representsObject()) mean = object;
+  else findMeanFromSubclusters();
+}
+
+void cluster::findMeanFromSubclusters()
+{
+  double currentClusterWeight = 0.0f;
+  std::shared_ptr<sample> currentObject;
+
+  std::unordered_map<std::string, double> numericAttributesData;
+  std::unordered_map<std::string, std::unordered_map<std::string, double>> symbolicAttributesData;
+
+  for(std::shared_ptr<cluster> sc : subclusters)
+  {
+    currentObject = sc->getObject();
+    currentClusterWeight = sc->getWeight();
+
+    // First initialize structures
+    for(auto kv : currentObject->attributesValues)
+    {
+      if((*(currentObject->attributesData))[kv.first]->getType() == "symbolic")
+        symbolicAttributesData[kv.first][kv.second] = 0.0f;
+      else
+        numericAttributesData[kv.first] = 0.0f;
+    }
+
+    // Being sure, that I now have data initialized to 0 I begin finding mean values
+    for(auto kv : currentObject->attributesValues)
+    {
+      if((*(currentObject->attributesData))[kv.first]->getType() == "symbolic")
+        symbolicAttributesData[kv.first][kv.second] =
+            symbolicAttributesData[kv.first][kv.second] + currentClusterWeight;
+      else
+        numericAttributesData[kv.first] = numericAttributesData[kv.first]
+            + currentClusterWeight * std::stod(kv.second);
+    }
+  }
+
+  mean = std::shared_ptr<sample>(new sample);
+  mean->attributesData = subclusters[0]->getObject()->attributesData;
+
+  double summaricWeight = getWeight();
+
+  for(auto kv : numericAttributesData)
+    mean->attributesValues[kv.first] = kv.second / summaricWeight;
+
+  std::pair<std::string, double> symbolicAttributeValWeight;
+
+  for(auto kv : symbolicAttributesData)
+  {
+    symbolicAttributeValWeight.second = 0.0f;
+
+    for(auto av : kv.second)
+    {
+      if(symbolicAttributeValWeight.second < av.second)
+      {
+        symbolicAttributeValWeight.second = av.second;
+        symbolicAttributeValWeight.first = av.first;
+      }
+    }
+
+    mean->attributesValues[kv.first] = symbolicAttributeValWeight.first;
+  }
+
+}
+
+void cluster::findVariation()
+{
+  if(mean.get() == nullptr) findMean();
+  variation.clear();
+
+  double summaricWeight = getWeight();
+  double updatedVariationValue = 0;
+
+  // Initialize variation
+  for(auto kv : mean->attributesValues)
+    variation[kv.first] = 0;
+
+  for(std::shared_ptr<cluster> sc : subclusters)
+  {
+    for(auto kv : sc->getObject()->attributesValues)
+    {
+      if((*(mean->attributesData))[kv.first]->getType() == "numeric")
+      {
+        updatedVariationValue = std::stod(kv.second);
+        updatedVariationValue -= std::stod(mean->attributesValues[kv.first]);
+        updatedVariationValue = pow(updatedVariationValue, 2);
+        updatedVariationValue *= sc->getWeight();
+        updatedVariationValue /= summaricWeight;
+        updatedVariationValue += variation[kv.first];
+        variation[kv.first] = updatedVariationValue;
+      }
+    }
+  }
 }

@@ -35,12 +35,19 @@ class cluster
     cluster *getMedoid();
     void setMedoid(std::shared_ptr<cluster> newMedoid);
 
+    std::shared_ptr<sample> getMean();
+    void setMean(std::shared_ptr<sample> newMean);
+
+    std::unordered_map<std::string, double> getVariation();
+
     void setRepresentative(sample *newRepresentative);
     void findRepresentative();
     sample* getRepresentative();
 
     long setTimestamp(long timestamp);
     long getTimestamp();
+
+    void countVariation();
 
     long positiveTemporalDerivativeTimesInARow = 0;
 
@@ -52,9 +59,17 @@ class cluster
 
     std::shared_ptr<sample> object;
     sample* representative;
+    std::shared_ptr<sample> mean;
     std::shared_ptr<cluster> medoid;
 
+    std::unordered_map<std::string, double> variation;
+
     std::vector<std::shared_ptr<cluster>> subclusters;
+
+    void findMean();
+      void findMeanFromSubclusters();
+
+    void findVariation();
 
 };
 
