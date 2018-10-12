@@ -31,6 +31,7 @@ class cluster
 
     void setWeight(double weight);
     double getWeight();
+    double getSquaredWeight();
 
     cluster *getMedoid();
     void setMedoid(std::shared_ptr<cluster> newMedoid);
