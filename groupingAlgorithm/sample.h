@@ -5,8 +5,6 @@
 #include <unordered_map>
 #include "../attributeData.h"
 
-#include "../attributeData.h"
-
 class sample
 {
   public:
