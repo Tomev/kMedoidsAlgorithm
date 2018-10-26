@@ -98,6 +98,16 @@ long cluster::size()
   return 0;
 }
 
+
+/**
+ * @brief cluster::dimension
+ * @return Dimension of the cluster.
+ */
+long cluster::dimension()
+{
+  return representative->attributesValues.size();
+}
+
 void cluster::setWeight(double weight)
 {
   this->weight = weight;
@@ -124,8 +134,6 @@ double cluster::getSquaredWeight()
 
   return w;
 }
-
-
 
 cluster* cluster::getMedoid()
 {
@@ -154,10 +162,15 @@ void cluster::setMean(std::shared_ptr<sample> newMean)
 
 std::unordered_map<std::string, double> cluster::getVariation()
 {
-  if(representsObject()) return variation;
-  else if(variation.size() == 0) findVariation();
+  if(subclusters.size() == 0) return variation;
+  if(variation.size() == 0) findVariation();
 
   return variation;
+}
+
+void cluster::setVariantion(std::unordered_map<std::string, double> variantion)
+{
+  variation = variantion;
 }
 
 void cluster::setRepresentative(sample *newRepresentative)

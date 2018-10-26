@@ -28,6 +28,7 @@ class cluster
     bool hasSubcluster(std::shared_ptr<cluster> c);
 
     long size();
+    long dimension();
 
     void setWeight(double weight);
     double getWeight();
@@ -40,6 +41,7 @@ class cluster
     void setMean(std::shared_ptr<sample> newMean);
 
     std::unordered_map<std::string, double> getVariation();
+    void setVariantion(std::unordered_map<std::string, double> variantion);
 
     void setRepresentative(sample *newRepresentative);
     void findRepresentative();
