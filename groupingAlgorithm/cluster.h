@@ -54,6 +54,8 @@ class cluster
 
     long positiveTemporalDerivativeTimesInARow = 0;
 
+    std::vector<double> predictionParameters;
+
   protected:
 
     long index;
