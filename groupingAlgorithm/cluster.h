@@ -54,7 +54,24 @@ class cluster
 
     long positiveTemporalDerivativeTimesInARow = 0;
 
+    // Prediction
     std::vector<double> predictionParameters;
+    double _deactualizationParameter = 0.99;
+    double _tildedZ = 0;
+    double _doubleTildedZ = 0;
+    double _uPredictionParameter = 0.9;
+    double _lastPrediction = 0;
+
+    void initializePredictionParameters(double KDEValue);
+    void updatePredictionParameters(double KDEValue);
+    void updateLastPrediction();
+    void updateDeactualizationParameter(double KDEValue);
+
+    double getTildedZ();
+    double getDoubleTildedZ();
+    double getLastPrediction();
+    double getDeactualizationParameter();
+    std::vector<double> getPredictionParameters();
 
   protected:
 

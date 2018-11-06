@@ -199,6 +199,138 @@ long cluster::getTimestamp()
   return this->timestamp;
 }
 
+void cluster::initializePredictionParameters(double KDEValue)
+{
+  std::vector<std::vector<double>> reversedD =
+    { {1-pow(_deactualizationParameter,2), pow((1- _deactualizationParameter), 2)},
+      {pow((1- _deactualizationParameter), 2), pow((1- _deactualizationParameter), 3)/ _deactualizationParameter}};
+
+  predictionParameters =
+    std::vector<double>({
+     reversedD[0][0] * KDEValue,
+     0
+  });
+
+  updateLastPrediction();
+}
+
+void cluster::updatePredictionParameters(double KDEValue)
+{
+  double upperValue, lowerValue;
+
+  upperValue = predictionParameters[0] + predictionParameters[1];
+  upperValue += (1 - pow(_deactualizationParameter, 2)) * (KDEValue - _lastPrediction);
+
+  lowerValue = predictionParameters[1];
+  lowerValue += pow(1 - _deactualizationParameter, 2) * (KDEValue - _lastPrediction);
+
+  predictionParameters =
+    std::vector<double>({
+     upperValue,
+     lowerValue
+  });
+
+  updateLastPrediction();
+}
+
+void cluster::updateLastPrediction()
+{
+  _lastPrediction = predictionParameters[0] + predictionParameters[1];
+}
+
+void cluster::updateDeactualizationParameter(double KDEValue)
+{
+  double eParameter = _lastPrediction - KDEValue;
+
+  if(_doubleTildedZ < 1e-5)
+  {
+    _doubleTildedZ = eParameter;
+    _deactualizationParameter = 0.99;
+  }
+  else
+  {
+    _doubleTildedZ = (1.0 - _uPredictionParameter) * eParameter + _uPredictionParameter * _doubleTildedZ;
+    _tildedZ = (1.0 - _uPredictionParameter) * eParameter + _uPredictionParameter * _tildedZ;
+    _deactualizationParameter = 1.0 - fabs(_tildedZ / _doubleTildedZ);;
+  }
+}
+
+double cluster::getTildedZ()
+{
+  if(subclusters.size() < 2) return _tildedZ;
+
+  double averageTildedZ = 0;
+
+  for(auto c : subclusters)
+    averageTildedZ += c->_tildedZ * c->weight;
+
+  averageTildedZ /= getWeight();
+
+  return averageTildedZ;
+}
+
+double cluster::getDoubleTildedZ()
+{
+  if(subclusters.size() < 2) return _doubleTildedZ;
+
+  double averageDoubleTildedZ = 0;
+
+  for(auto c : subclusters)
+    averageDoubleTildedZ += c->_doubleTildedZ * c->weight;
+
+  averageDoubleTildedZ /= getWeight();
+
+  return averageDoubleTildedZ;
+}
+
+double cluster::getLastPrediction()
+{
+  if(subclusters.size() < 2) return _lastPrediction;
+
+  double averageLastPrediction = 0;
+
+  for(auto c : subclusters)
+    averageLastPrediction += c->_lastPrediction * c->weight;
+
+  averageLastPrediction /= getWeight();
+
+  return averageLastPrediction;
+}
+
+double cluster::getDeactualizationParameter()
+{
+  if(subclusters.size() < 2) return _deactualizationParameter;
+
+  double averageDeactualizationParameter = 0;
+
+  for(auto c : subclusters)
+    averageDeactualizationParameter += c->_deactualizationParameter * c->weight;
+
+  averageDeactualizationParameter /= getWeight();
+
+  return averageDeactualizationParameter;
+}
+
+std::vector<double> cluster::getPredictionParameters()
+{
+  if(subclusters.size() < 2) return predictionParameters;
+
+  double upperValue = 0;
+  double lowerValue = 0;
+
+  for(auto c : subclusters)
+  {
+    if(c->predictionParameters.size() == 0) continue;
+    upperValue += c->predictionParameters[0] * c->weight;
+    lowerValue += c->predictionParameters[1] * c->weight;
+  }
+
+  upperValue /= getWeight();
+  lowerValue /= getWeight();
+
+  return std::vector<double>({upperValue, lowerValue});
+}
+
 void cluster::findMean()
 {
   if(this->representsObject()) mean = object;
