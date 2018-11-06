@@ -212,6 +212,7 @@ void cluster::initializePredictionParameters(double KDEValue)
   });
 
   updateLastPrediction();
+  _lastKDEValue = KDEValue;
 }
 
 void cluster::updatePredictionParameters(double KDEValue)
@@ -231,6 +232,7 @@ void cluster::updatePredictionParameters(double KDEValue)
   });
 
   updateLastPrediction();
+  _lastKDEValue = KDEValue;
 }
 
 void cluster::updateLastPrediction()
@@ -253,6 +255,8 @@ void cluster::updateDeactualizationParameter(double KDEValue)
     _tildedZ = (1.0 - _uPredictionParameter) * eParameter + _uPredictionParameter * _tildedZ;
     _deactualizationParameter = 1.0 - fabs(_tildedZ / _doubleTildedZ);;
   }
+
+  _lastKDEValue = KDEValue;
 }
 
 double cluster::getTildedZ()
@@ -309,6 +313,20 @@ double cluster::getDeactualizationParameter()
   averageDeactualizationParameter /= getWeight();
 
   return averageDeactualizationParameter;
+}
+
+double cluster::getLastKDEValue()
+{
+  if(subclusters.size() < 2) return _lastKDEValue;
+
+  double averageLastKDEValue = 0;
+
+  for(auto c : subclusters)
+    averageLastKDEValue += c->_lastKDEValue * c->weight;
+
+  averageLastKDEValue /= getWeight();
+
+  return averageLastKDEValue;
 }
 
 std::vector<double> cluster::getPredictionParameters()

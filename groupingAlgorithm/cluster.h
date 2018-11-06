@@ -61,6 +61,7 @@ class cluster
     double _doubleTildedZ = 0;
     double _uPredictionParameter = 0.9;
     double _lastPrediction = 0;
+    double _lastKDEValue = 0;
 
     void initializePredictionParameters(double KDEValue);
     void updatePredictionParameters(double KDEValue);
@@ -71,6 +72,7 @@ class cluster
     double getDoubleTildedZ();
     double getLastPrediction();
     double getDeactualizationParameter();
+    double getLastKDEValue();
     std::vector<double> getPredictionParameters();
 
   protected:
