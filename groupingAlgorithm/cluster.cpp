@@ -201,15 +201,15 @@ long cluster::getTimestamp()
 
 void cluster::initializePredictionParameters(double KDEValue)
 {
+  /*
   std::vector<std::vector<double>> reversedD =
-    { {1-pow(_deactualizationParameter,2), pow((1- _deactualizationParameter), 2)},
-      {pow((1- _deactualizationParameter), 2), pow((1- _deactualizationParameter), 3)/ _deactualizationParameter}};
+    { {1.0-pow(_deactualizationParameter,2), pow((1.0- _deactualizationParameter), 2)},
+      {pow((1.0- _deactualizationParameter), 2), pow((1.0- _deactualizationParameter), 3)/ _deactualizationParameter}};
 
-  predictionParameters =
-    std::vector<double>({
-     reversedD[0][0] * KDEValue,
-     0
-  });
+  predictionParameters = std::vector<double>({reversedD[0][0] * KDEValue, 0});
+  */
+
+  predictionParameters = std::vector<double>({KDEValue, 0});
 
   updateLastPrediction();
   _lastKDEValue = KDEValue;
@@ -220,16 +220,12 @@ void cluster::updatePredictionParameters(double KDEValue)
   double upperValue, lowerValue;
 
   upperValue = predictionParameters[0] + predictionParameters[1];
-  upperValue += (1 - pow(_deactualizationParameter, 2)) * (KDEValue - _lastPrediction);
+  upperValue += (1.0 - pow(_deactualizationParameter, 2)) * (KDEValue - _lastPrediction);
 
   lowerValue = predictionParameters[1];
-  lowerValue += pow(1 - _deactualizationParameter, 2) * (KDEValue - _lastPrediction);
+  lowerValue += pow(1.0 - _deactualizationParameter, 2) * (KDEValue - _lastPrediction);
 
-  predictionParameters =
-    std::vector<double>({
-     upperValue,
-     lowerValue
-  });
+  predictionParameters = std::vector<double>({ upperValue, lowerValue });
 
   updateLastPrediction();
   _lastKDEValue = KDEValue;
