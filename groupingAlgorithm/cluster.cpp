@@ -225,14 +225,12 @@ void cluster::updatePredictionParameters(double KDEValue)
   lowerValue = predictionParameters[1];
   lowerValue += pow(1.0 - _deactualizationParameter, 2) * (KDEValue - _lastPrediction);
 
-  if(lowerValue > 10)
+  if(fabs(lowerValue) > 10)
   {
-    std::cout << "lower val:" << lowerValue << "\n";
-    std::cout << "old pred 0: " << predictionParameters[0] << std::endl;
-    std::cout << "old pred 1: " << predictionParameters[1] << std::endl;
-    std::cout << "u : " << _deactualizationParameter << std::endl;
-    std::cout << "Last pred: " << _lastKDEValue << std::endl;
-    std::cout << "Difference: " << KDEValue - _lastPrediction << std::endl;
+    std::cout<< "=============================" << std::endl;
+    std::cout << lowerValue << std::endl;
+    std::cout << _deactualizationParameter << std::endl;
+    std::cout<< "=============================" << std::endl;
   }
 
   predictionParameters = std::vector<double>({ upperValue, lowerValue });
@@ -253,17 +251,29 @@ void cluster::updateDeactualizationParameter(double KDEValue)
   if(_doubleTildedZ < 1e-5)
   {
     _doubleTildedZ = eParameter;
-    _deactualizationParameter = 0.99;
+    _tildedZ = 0.0;
+    _deactualizationParameter = 1.0;
   }
   else
   {
-    _doubleTildedZ = (1.0 - _uPredictionParameter) * eParameter + _uPredictionParameter * _doubleTildedZ;
+    _doubleTildedZ = (1.0 - _uPredictionParameter) * fabs(eParameter) + _uPredictionParameter * _doubleTildedZ;
     _tildedZ = (1.0 - _uPredictionParameter) * eParameter + _uPredictionParameter * _tildedZ;
-    _deactualizationParameter = 1.0 - fabs(_tildedZ / _doubleTildedZ);;
+    _deactualizationParameter = 1.0 - fabs(_tildedZ / _doubleTildedZ);
   }
 
+  /*
+  if(fabs(_deactualizationParameter) > 0)
+  {
+    std::cout << "param = " << _deactualizationParameter << std::endl;
+    std::cout << "dtz = " << _doubleTildedZ << std::endl;
+    std::cout << "tz = " << _tildedZ << std::endl;
+    std::cout << "dtz = " << _doubleTildedZ << std::endl;
+    std::cout << "e = " << eParameter << std::endl;
+  }
+  */
+
   // TODO
-  _deactualizationParameter = 0.99;
+  //_deactualizationParameter = 0.99;
 
   _lastKDEValue = KDEValue;
 }
