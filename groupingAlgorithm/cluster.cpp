@@ -201,6 +201,7 @@ long cluster::getTimestamp()
 
 void cluster::initializePredictionParameters(double KDEValue)
 {
+  /*
   std::vector<std::vector<double>> reversedD =
     { {1-pow(_deactualizationParameter,2), pow((1- _deactualizationParameter), 2)},
       {pow((1- _deactualizationParameter), 2), pow((1- _deactualizationParameter), 3)/ _deactualizationParameter}};
@@ -208,6 +209,13 @@ void cluster::initializePredictionParameters(double KDEValue)
   predictionParameters =
     std::vector<double>({
      reversedD[0][0] * KDEValue,
+     0
+  });
+  */
+
+  predictionParameters =
+    std::vector<double>({
+     KDEValue,
      0
   });
 
