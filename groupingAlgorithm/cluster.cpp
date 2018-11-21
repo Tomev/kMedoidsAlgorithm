@@ -220,10 +220,20 @@ void cluster::updatePredictionParameters(double KDEValue)
   double upperValue, lowerValue;
 
   upperValue = predictionParameters[0] + predictionParameters[1];
-  upperValue += (1.0 - pow(_deactualizationParameter, 2)) * (KDEValue - _lastPrediction);
+  upperValue += (1.0 - _deactualizationParameter) * (KDEValue - _lastPrediction);
 
   lowerValue = predictionParameters[1];
   lowerValue += pow(1.0 - _deactualizationParameter, 2) * (KDEValue - _lastPrediction);
+
+  if(lowerValue > 10)
+  {
+    std::cout << "lower val:" << lowerValue << "\n";
+    std::cout << "old pred 0: " << predictionParameters[0] << std::endl;
+    std::cout << "old pred 1: " << predictionParameters[1] << std::endl;
+    std::cout << "u : " << _deactualizationParameter << std::endl;
+    std::cout << "Last pred: " << _lastKDEValue << std::endl;
+    std::cout << "Difference: " << KDEValue - _lastPrediction << std::endl;
+  }
 
   predictionParameters = std::vector<double>({ upperValue, lowerValue });
 
@@ -251,6 +261,9 @@ void cluster::updateDeactualizationParameter(double KDEValue)
     _tildedZ = (1.0 - _uPredictionParameter) * eParameter + _uPredictionParameter * _tildedZ;
     _deactualizationParameter = 1.0 - fabs(_tildedZ / _doubleTildedZ);;
   }
+
+  // TODO
+  _deactualizationParameter = 0.99;
 
   _lastKDEValue = KDEValue;
 }
