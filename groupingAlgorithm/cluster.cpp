@@ -204,7 +204,6 @@ void cluster::initializePredictionParameters(double KDEValue)
   predictionParameters = std::vector<double>({KDEValue, 0});
 
   updateLastPrediction();
-  _lastKDEValue = KDEValue;
 }
 
 void cluster::updatePredictionParameters(double KDEValue)
@@ -228,7 +227,6 @@ void cluster::updatePredictionParameters(double KDEValue)
   predictionParameters = std::vector<double>({ upperValue, lowerValue });
 
   updateLastPrediction();
-  _lastKDEValue = KDEValue;
 }
 
 void cluster::updateLastPrediction()
@@ -252,20 +250,6 @@ void cluster::updateDeactualizationParameter(double KDEValue)
     _tildedZ = (1.0 - _uPredictionParameter) * eParameter + _uPredictionParameter * _tildedZ;
     _deactualizationParameter = 1.0 - fabs(_tildedZ / _doubleTildedZ);
   }
-
-  /*
-  if(fabs(_deactualizationParameter) > 0)
-  {
-    std::cout << "param = " << _deactualizationParameter << std::endl;
-    std::cout << "dtz = " << _doubleTildedZ << std::endl;
-    std::cout << "tz = " << _tildedZ << std::endl;
-    std::cout << "dtz = " << _doubleTildedZ << std::endl;
-    std::cout << "e = " << eParameter << std::endl;
-  }
-  */
-
-  // TODO
-  //_deactualizationParameter = 0.99;
 
   _lastKDEValue = KDEValue;
 }

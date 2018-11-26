@@ -62,6 +62,7 @@ class cluster
     double _uPredictionParameter = 0.9;
     double _lastPrediction = 0;
     double _lastKDEValue = 0;
+    double _currentKDEValue = 0;
 
     void initializePredictionParameters(double KDEValue);
     void updatePredictionParameters(double KDEValue);
