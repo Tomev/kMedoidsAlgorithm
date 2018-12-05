@@ -63,6 +63,7 @@ class cluster
     double _lastPrediction = 0;
     double _lastKDEValue = 0;
     double _currentKDEValue = 0;
+    double _KDEDerivativeValue = 0;
 
     void initializePredictionParameters(double KDEValue);
     void updatePredictionParameters(double KDEValue);
