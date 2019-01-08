@@ -256,7 +256,7 @@ void cluster::updateDeactualizationParameter(double KDEValue)
 
 double cluster::getTildedZ()
 {
-  if(subclusters.size() < 2) return _tildedZ;
+  if(representsObject()) return _tildedZ;
 
   double averageTildedZ = 0;
 
@@ -270,7 +270,7 @@ double cluster::getTildedZ()
 
 double cluster::getDoubleTildedZ()
 {
-  if(subclusters.size() < 2) return _doubleTildedZ;
+  if(representsObject()) return _doubleTildedZ;
 
   double averageDoubleTildedZ = 0;
 
@@ -284,7 +284,7 @@ double cluster::getDoubleTildedZ()
 
 double cluster::getLastPrediction()
 {
-  if(subclusters.size() < 2) return _lastPrediction;
+  if(representsObject()) return _lastPrediction;
 
   double averageLastPrediction = 0;
 
@@ -298,7 +298,7 @@ double cluster::getLastPrediction()
 
 double cluster::getDeactualizationParameter()
 {
-  if(subclusters.size() < 2) return _deactualizationParameter;
+  if(representsObject()) return _deactualizationParameter;
 
   double averageDeactualizationParameter = 0;
 
@@ -312,7 +312,7 @@ double cluster::getDeactualizationParameter()
 
 double cluster::getLastKDEValue()
 {
-  if(subclusters.size() < 2) return _lastKDEValue;
+  if(representsObject()) return  _lastKDEValue;
 
   double averageLastKDEValue = 0;
 
@@ -326,7 +326,7 @@ double cluster::getLastKDEValue()
 
 std::vector<double> cluster::getPredictionParameters()
 {
-  if(subclusters.size() < 2) return predictionParameters;
+  if(representsObject()) return predictionParameters;
 
   double upperValue = 0;
   double lowerValue = 0;
