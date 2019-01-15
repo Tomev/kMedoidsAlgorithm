@@ -59,7 +59,7 @@ class cluster
     double _deactualizationParameter = 0.9;
     double _tildedZ = 0;
     double _doubleTildedZ = 0;
-    double _uPredictionParameter = 0.9;
+    double _uPredictionParameter = 0.95;
     double _lastPrediction = 0;
     double _lastKDEValue = 0;
     double _currentKDEValue = 0;

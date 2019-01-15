@@ -242,7 +242,7 @@ void cluster::updateDeactualizationParameter(double KDEValue)
   {
     _doubleTildedZ = fabs(eParameter);
     _tildedZ = 0.0;
-    _deactualizationParameter = 1.0;
+   // _deactualizationParameter = 1.0;
   }
   else
   {
