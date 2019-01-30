@@ -56,10 +56,15 @@ class cluster
 
     // Prediction
     std::vector<double> predictionParameters;
-    double _deactualizationParameter = 0.9;
+    double _deactualizationParameter = 0.99;
+    int _predictionsSteps = 1;
+    int _j = 0;
+    std::vector<std::vector<double>> _matrixDj = {};
+    std::vector<double>_djVector = {};
+    bool _shouldUpdateDeactualizationParameter = false;
     double _tildedZ = 0;
     double _doubleTildedZ = 0;
-    double _uPredictionParameter = 0.95;
+    double _uPredictionParameter = 0.999;
     double _lastPrediction = 0;
     double _lastKDEValue = 0;
     double _currentKDEValue = 0;
@@ -67,6 +72,8 @@ class cluster
 
     void initializePredictionParameters(double KDEValue);
     void updatePredictionParameters(double KDEValue);
+    void updateDjMatrix();
+    void updatedjVector(double KDEValue);
     void updateLastPrediction();
     void updateDeactualizationParameter(double KDEValue);
 
@@ -76,6 +83,8 @@ class cluster
     double getDeactualizationParameter();
     double getLastKDEValue();
     std::vector<double> getPredictionParameters();
+
+    std::string rowToSave = "";
 
   protected:
 

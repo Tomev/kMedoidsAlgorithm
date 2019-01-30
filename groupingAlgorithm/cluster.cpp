@@ -1,6 +1,7 @@
 #include <c++/clocale>
 #include <c++/iostream>
 #include <math.h>
+#include <qDebug>
 
 #include "cluster.h"
 
@@ -201,57 +202,128 @@ long cluster::getTimestamp()
 
 void cluster::initializePredictionParameters(double KDEValue)
 {
-  predictionParameters = std::vector<double>({KDEValue, 0});
+  predictionParameters =  { KDEValue, 0 };
+  _matrixDj = { { 1, 0 }, { 0, 0 } };
+  _djVector = { KDEValue, 0 };
 
   updateLastPrediction();
 }
 
 void cluster::updatePredictionParameters(double KDEValue)
 {
-  double upperValue, lowerValue;
+  ++_j;
+
+  if(_shouldUpdateDeactualizationParameter)
+    updateDeactualizationParameter(KDEValue);
+
+  double upperValue = 0, lowerValue = 0, denominator = 0;
+
+  // Finite case.
+  updateDjMatrix();
+  updatedjVector(KDEValue);
+
+  denominator =
+      _matrixDj[0][0] * _matrixDj[1][1] - _matrixDj[1][0] * _matrixDj[0][1];
+
+  upperValue =
+      _matrixDj[1][1] * _djVector[0] - _matrixDj[0][1] * _djVector[1];
+  upperValue /= denominator;
+
+  lowerValue =
+      _matrixDj[0][0] * _djVector[1] - _matrixDj[1][0] * _djVector[0];
+  lowerValue /= denominator;
+
+  /*
+  // Limit case.
+  double predictionAndAcutalDifference =
+      (KDEValue - _lastPrediction);
 
   upperValue = predictionParameters[0] + predictionParameters[1];
-  upperValue += (1.0 - _deactualizationParameter) * (KDEValue - _lastPrediction);
+  upperValue += (1.0 - pow(_deactualizationParameter, 2))
+      * predictionAndAcutalDifference;
 
   lowerValue = predictionParameters[1];
-  lowerValue += pow(1.0 - _deactualizationParameter, 2) * (KDEValue - _lastPrediction);
+  lowerValue += pow(1.0 - _deactualizationParameter, 2)
+      * predictionAndAcutalDifference;
+  */
 
-  if(fabs(lowerValue) > 10)
-  {
-    std::cout<< "=============================" << std::endl;
-    std::cout << lowerValue << std::endl;
-    std::cout << _deactualizationParameter << std::endl;
-    std::cout<< "=============================" << std::endl;
-  }
-
-  predictionParameters = std::vector<double>({ upperValue, lowerValue });
+  predictionParameters = { upperValue, lowerValue };
 
   updateLastPrediction();
 }
 
+void cluster::updateDjMatrix()
+{
+  double leftValue = 0, rightValue = 0;
+  std::vector<double> upperRow = {}, lowerRow = {};
+
+  // First upper row.
+  leftValue = _matrixDj[0][0] + pow(_deactualizationParameter, _j);
+  rightValue = _matrixDj[0][1] - _j * pow(_deactualizationParameter, _j);
+  upperRow = {leftValue, rightValue};
+
+  // Then lower row.
+  leftValue = _matrixDj[1][0] - _j * pow(_deactualizationParameter, _j);
+  rightValue = _matrixDj[1][1] + _j * _j * pow(_deactualizationParameter, _j);
+  lowerRow = {leftValue, rightValue};
+
+  _matrixDj = {upperRow, lowerRow};
+}
+
+void cluster::updatedjVector(double KDEValue)
+{
+  double upperValue = 0.0, lowerValue = 0.0;
+  upperValue = _deactualizationParameter * _djVector[0] + KDEValue;
+  lowerValue = _deactualizationParameter * (_djVector[1] - _djVector[0]);
+  _djVector = {upperValue, lowerValue};
+}
+
 void cluster::updateLastPrediction()
 {
-  _lastPrediction = predictionParameters[0] + predictionParameters[1];
+  _lastPrediction = predictionParameters[0];
+  _lastPrediction += predictionParameters[1] * _predictionsSteps;
 }
 
 void cluster::updateDeactualizationParameter(double KDEValue)
 {
+  if(_j == 1)
+  {
+    _deactualizationParameter = 1.0;
+    return;
+  }
+
   double eParameter = _lastPrediction - KDEValue;
 
-  if(_doubleTildedZ < 1e-5)
+  //if(_j == 1) _doubleTildedZ = fabs(eParameter);
+
+  qDebug() << "y_s = " << _lastPrediction;
+  qDebug() << "y = " << KDEValue;
+
+  _doubleTildedZ = (1.0 - _uPredictionParameter) * fabs(eParameter) +
+      _uPredictionParameter * _doubleTildedZ;
+  _tildedZ = (1.0 - _uPredictionParameter) * eParameter +
+      _uPredictionParameter * _tildedZ;
+
+  if(_doubleTildedZ < 1e-20)
   {
-    _doubleTildedZ = fabs(eParameter);
-    _tildedZ = 0.0;
-   // _deactualizationParameter = 1.0;
-  }
-  else
-  {
-    _doubleTildedZ = (1.0 - _uPredictionParameter) * fabs(eParameter) + _uPredictionParameter * _doubleTildedZ;
-    _tildedZ = (1.0 - _uPredictionParameter) * eParameter + _uPredictionParameter * _tildedZ;
-    _deactualizationParameter = 1.0 - fabs(_tildedZ / _doubleTildedZ);
+    qDebug() << "dtilded z is low: " << _doubleTildedZ;
+    _deactualizationParameter = 1.0;
+    return;
   }
 
-  _lastKDEValue = KDEValue;
+  qDebug() << "e = " << eParameter;
+  qDebug() << "~~z = " << _doubleTildedZ;
+  qDebug() << "~z = " << _tildedZ;
+
+  double zj = fabs(_tildedZ / _doubleTildedZ);
+  qDebug() << "z = " << zj;
+
+  _deactualizationParameter = 1.0 - zj;
+
+  rowToSave = std::to_string(KDEValue) + "," + std::to_string(_lastPrediction);
+  rowToSave += "," + std::to_string(eParameter) + "," + std::to_string(_tildedZ);
+  rowToSave += "," + std::to_string(_doubleTildedZ) + ",";
+  rowToSave += std::to_string(zj) + "," + std::to_string(_deactualizationParameter);
 }
 
 double cluster::getTildedZ()
