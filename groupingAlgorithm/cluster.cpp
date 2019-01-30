@@ -289,6 +289,7 @@ void cluster::updateDeactualizationParameter(double KDEValue)
   if(_j == 1)
   {
     _deactualizationParameter = 1.0;
+    rowToSave = std::to_string(KDEValue) + ",-,0,0,0,0,1\n";
     return;
   }
 
@@ -296,8 +297,8 @@ void cluster::updateDeactualizationParameter(double KDEValue)
 
   //if(_j == 1) _doubleTildedZ = fabs(eParameter);
 
-  qDebug() << "y_s = " << _lastPrediction;
-  qDebug() << "y = " << KDEValue;
+  //qDebug() << "y_s = " << _lastPrediction;
+  //qDebug() << "y = " << KDEValue;
 
   _doubleTildedZ = (1.0 - _uPredictionParameter) * fabs(eParameter) +
       _uPredictionParameter * _doubleTildedZ;
@@ -306,24 +307,27 @@ void cluster::updateDeactualizationParameter(double KDEValue)
 
   if(_doubleTildedZ < 1e-20)
   {
-    qDebug() << "dtilded z is low: " << _doubleTildedZ;
+    //qDebug() << "dtilded z is low: " << _doubleTildedZ;
     _deactualizationParameter = 1.0;
     return;
   }
 
-  qDebug() << "e = " << eParameter;
-  qDebug() << "~~z = " << _doubleTildedZ;
-  qDebug() << "~z = " << _tildedZ;
+  //qDebug() << "e = " << eParameter;
+  //qDebug() << "~~z = " << _doubleTildedZ;
+  //qDebug() << "~z = " << _tildedZ;
 
   double zj = fabs(_tildedZ / _doubleTildedZ);
-  qDebug() << "z = " << zj;
+  //qDebug() << "z = " << zj;
 
   _deactualizationParameter = 1.0 - zj;
 
-  rowToSave = std::to_string(KDEValue) + "," + std::to_string(_lastPrediction);
-  rowToSave += "," + std::to_string(eParameter) + "," + std::to_string(_tildedZ);
-  rowToSave += "," + std::to_string(_doubleTildedZ) + ",";
-  rowToSave += std::to_string(zj) + "," + std::to_string(_deactualizationParameter);
+  rowToSave = std::to_string(KDEValue) + ",";
+  rowToSave += std::to_string(_lastPrediction) + ",";
+  rowToSave += std::to_string(eParameter) + ",";
+  rowToSave += std::to_string(_tildedZ) + ",";
+  rowToSave += std::to_string(_doubleTildedZ) + ",";
+  rowToSave += std::to_string(zj) + ",";
+  rowToSave += std::to_string(_deactualizationParameter) + "\n";
 }
 
 double cluster::getTildedZ()
