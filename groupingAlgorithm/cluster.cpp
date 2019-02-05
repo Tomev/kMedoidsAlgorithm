@@ -206,6 +206,9 @@ void cluster::initializePredictionParameters(double KDEValue)
   _matrixDj = { { 1, 0 }, { 0, 0 } };
   _djVector = { KDEValue, 0 };
 
+  if(_shouldUpdateDeactualizationParameter)
+    updatePredictionParameters(KDEValue);
+
   updateLastPrediction();
 }
 
@@ -215,6 +218,9 @@ void cluster::updatePredictionParameters(double KDEValue)
 
   if(_shouldUpdateDeactualizationParameter)
     updateDeactualizationParameter(KDEValue);
+
+  if(_j == 1)
+    return;
 
   double upperValue = 0, lowerValue = 0, denominator = 0;
 
@@ -256,15 +262,18 @@ void cluster::updateDjMatrix()
 {
   double leftValue = 0, rightValue = 0;
   std::vector<double> upperRow = {}, lowerRow = {};
+  int j = _j - 1;
+
+  double deactualizationCoefficient = pow(_deactualizationParameter, j);
 
   // First upper row.
-  leftValue = _matrixDj[0][0] + pow(_deactualizationParameter, _j);
-  rightValue = _matrixDj[0][1] - _j * pow(_deactualizationParameter, _j);
+  leftValue = _matrixDj[0][0] + deactualizationCoefficient;
+  rightValue = _matrixDj[0][1] - j * deactualizationCoefficient;
   upperRow = {leftValue, rightValue};
 
   // Then lower row.
-  leftValue = _matrixDj[1][0] - _j * pow(_deactualizationParameter, _j);
-  rightValue = _matrixDj[1][1] + _j * _j * pow(_deactualizationParameter, _j);
+  leftValue = _matrixDj[1][0] - j * deactualizationCoefficient;
+  rightValue = _matrixDj[1][1] + j * j * deactualizationCoefficient;
   lowerRow = {leftValue, rightValue};
 
   _matrixDj = {upperRow, lowerRow};
@@ -288,8 +297,10 @@ void cluster::updateDeactualizationParameter(double KDEValue)
 {
   if(_j == 1)
   {
-    _deactualizationParameter = 1.0;
-    rowToSave = std::to_string(KDEValue) + ",-,0,0,0,0,1\n";
+    _tildedZ = 1;
+    _doubleTildedZ = 10;
+    _deactualizationParameter = 0.9;
+    rowToSave = std::to_string(KDEValue) + ",-,0,1,10,0.1,0.9\n";
     return;
   }
 
