@@ -108,5 +108,7 @@ class cluster
 
 };
 
+typedef std::shared_ptr<cluster> clusterPtr;
+
 
 #endif //K_MEDOIDALGORITHM_CLUSTER_H
