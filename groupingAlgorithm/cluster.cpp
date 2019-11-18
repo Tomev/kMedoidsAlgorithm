@@ -69,14 +69,15 @@ void cluster::getObjects(std::vector<std::shared_ptr<sample>>* target)
     return;
   }
 
-  if(subclusters.size() > 0) // If it has subcluster get it's subclusters objects
+  if(this->representsObject()) // Check if cluster is singular object
+  {
+    target->push_back(this->getObject());
+  }
+  else if(subclusters.size() > 0) // If it has subcluster get it's subclusters objects
   {
     for(std::shared_ptr<cluster> c : subclusters) c.get()->getObjects(target);
   }
-  else if(this->representsObject()) // Check if cluster is singular object
-  {
-    target->push_back(this->getObject());
-  }  
+
 }
 
 void cluster::getSubclusters(std::vector<std::shared_ptr<cluster> > *target)
@@ -202,7 +203,9 @@ double cluster::getTimestamp()
 
   if(subclusters.size() == 0)
     ts = timestamp;
-  else{
+  else if(subclusters.size() == 1){
+    return subclusters[0]->getTimestamp();
+  } else {
     for(auto c : subclusters){
         ts += c->getTimestamp() * c->getWeight();
     }
@@ -390,7 +393,9 @@ double cluster::getLastPrediction()
   for(auto c : subclusters)
     averageLastPrediction += c->_lastPrediction * c->weight;
 
-  averageLastPrediction /= getWeight();
+  double w = getWeight();
+  if(w > 0)
+    averageLastPrediction /= w;
 
   return averageLastPrediction;
 }
@@ -404,7 +409,9 @@ double cluster::getDeactualizationParameter()
   for(auto c : subclusters)
     averageDeactualizationParameter += c->_deactualizationParameter * c->weight;
 
-  averageDeactualizationParameter /= getWeight();
+  double w = getWeight();
+  if(w > 0)
+    averageDeactualizationParameter /= w;
 
   return averageDeactualizationParameter;
 }
@@ -418,7 +425,9 @@ double cluster::getLastKDEValue()
   for(auto c : subclusters)
     averageLastKDEValue += c->_lastKDEValue * c->weight;
 
-  averageLastKDEValue /= getWeight();
+  double w = getWeight();
+  if(w > 0)
+    averageLastKDEValue /= w;
 
   return averageLastKDEValue;
 }
@@ -437,8 +446,11 @@ std::vector<double> cluster::getPredictionParameters()
     lowerValue += c->predictionParameters[1] * c->weight;
   }
 
-  upperValue /= getWeight();
-  lowerValue /= getWeight();
+  double w = getWeight();
+  if(w > 0){
+    upperValue /= w;
+    lowerValue /= w;
+  }
 
   return std::vector<double>({upperValue, lowerValue});
 }
@@ -488,16 +500,16 @@ void cluster::findMeanFromSubclusters()
   mean = std::shared_ptr<sample>(new sample());
   mean->attributesData = subclusters[0]->getObject()->attributesData;
 
-  double summaricWeight = getWeight();
-
-  for(auto kv : numericAttributesData)
-    mean->attributesValues[kv.first] = std::to_string(kv.second / summaricWeight);
+  double w = getWeight();
+  if(w > 0)
+    for(auto kv : numericAttributesData)
+      mean->attributesValues[kv.first] = std::to_string(kv.second / w);
 
   std::pair<std::string, double> symbolicAttributeValWeight;
 
   for(auto kv : symbolicAttributesData)
   {
-    symbolicAttributeValWeight.second = 0.0f;
+    symbolicAttributeValWeight.second = 0;
 
     for(auto av : kv.second)
     {
@@ -519,11 +531,11 @@ void cluster::findVariation()
 
   variation.clear();
 
-  double summaricWeight = getWeight();
+  double w = getWeight();
   double summaricSquaredWeight = getSquaredWeight();
 
-  double varCoefficient = summaricWeight;
-  varCoefficient /= (pow(summaricWeight, 2) - summaricSquaredWeight);
+  double varCoefficient = w;
+  varCoefficient /= (pow(w, 2) - summaricSquaredWeight);
 
   double updatedVariationValue = 0;
 
