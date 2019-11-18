@@ -32,7 +32,9 @@ class cluster
     double timestamp = 0;
 
     void setWeight(double weight);
+    void setCWeight(double weight);
     double getWeight();
+    double getCWeight();
     double getSquaredWeight();
 
     cluster *getMedoid();
@@ -90,7 +92,8 @@ class cluster
   protected:
 
     long index;
-    double weight = 0;
+    double weight = 0; // p_i from 6 spraw e-mail
+    double _computationWeight = 0; // w_i from 6 spraw e-mail
 
 
     std::shared_ptr<sample> object;

@@ -114,7 +114,12 @@ long cluster::dimension()
 
 void cluster::setWeight(double weight)
 {
-  this->weight = weight;
+    this->weight = weight;
+}
+
+void cluster::setCWeight(double weight)
+{
+    _computationWeight = weight;
 }
 
 double cluster::getWeight()
@@ -126,6 +131,11 @@ double cluster::getWeight()
   for(std::shared_ptr<cluster> c : subclusters) w += c->getWeight();
 
   return w;
+}
+
+double cluster::getCWeight()
+{
+    return _computationWeight;
 }
 
 double cluster::getSquaredWeight()
