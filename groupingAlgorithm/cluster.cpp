@@ -9,22 +9,24 @@ cluster::cluster(){}
 
 cluster::cluster(long index) : index(index) {}
 
-cluster::cluster(std::shared_ptr<sample> object) : object(object)
+cluster::cluster(std::shared_ptr<sample> object, bool isMedoid) : object(object)
 {
   findRepresentative();
-  this->setWeight(1);
+  if(!isMedoid) this->setWeight(1);
+  if(isMedoid) timestamp = -1;
 }
 
-cluster::cluster(long index, std::shared_ptr<sample> object) : index(index),
+cluster::cluster(long index, std::shared_ptr<sample> object, bool isMedoid) : index(index),
   object(object)
 {
   findRepresentative();
-  this->setWeight(1);
+  if(!isMedoid) this->setWeight(1);
+  if(isMedoid) timestamp = -1;
 }
 
 bool cluster::representsObject()
 {
-  return object != NULL;
+  return object != nullptr;
 }
 
 std::string cluster::getClustersId()
@@ -94,7 +96,7 @@ long cluster::size()
 {
   if(subclusters.size() != 0) return subclusters.size();
 
-  if(representsObject()) return 1;
+  if(representsObject() && weight != 0) return 1;
 
   return 0;
 }
@@ -127,7 +129,7 @@ double cluster::getWeight()
 
 double cluster::getSquaredWeight()
 {
-  if(subclusters.size() == 0) return weight;
+  if(subclusters.size() == 0) return weight * weight;
 
   double w = 0;
 
@@ -189,15 +191,25 @@ sample *cluster::getRepresentative()
   return representative;
 }
 
-long cluster::setTimestamp(long timestamp)
+void cluster::setTimestamp(double timestamp)
 {
   this->timestamp = timestamp;
-  return this->timestamp;
 }
 
-long cluster::getTimestamp()
+double cluster::getTimestamp()
 {
-  return this->timestamp;
+  double ts = 0;
+
+  if(subclusters.size() == 0)
+    ts = timestamp;
+  else{
+    for(auto c : subclusters){
+        ts += c->getTimestamp() * c->getWeight();
+    }
+    ts /= getWeight();
+  }
+
+  return ts;
 }
 
 void cluster::initializePredictionParameters(double KDEValue)
@@ -413,7 +425,7 @@ double cluster::getLastKDEValue()
 
 std::vector<double> cluster::getPredictionParameters()
 {
-  if(representsObject()) return predictionParameters;
+  if(subclusters.size() == 0) return predictionParameters;
 
   double upperValue = 0;
   double lowerValue = 0;

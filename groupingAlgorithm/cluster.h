@@ -13,8 +13,8 @@ class cluster
 
     cluster();
     cluster(long index);
-    cluster(std::shared_ptr<sample> object);
-    cluster(long index, std::shared_ptr<sample> object);
+    cluster(std::shared_ptr<sample> object, bool isMedoid = false);
+    cluster(long index, std::shared_ptr<sample> object, bool isMedoid = false);
 
     bool representsObject();
     std::string getClustersId();
@@ -29,6 +29,7 @@ class cluster
 
     long size();
     long dimension();
+    double timestamp = 0;
 
     void setWeight(double weight);
     double getWeight();
@@ -47,8 +48,8 @@ class cluster
     void findRepresentative();
     sample* getRepresentative();
 
-    long setTimestamp(long timestamp);
-    long getTimestamp();
+    void setTimestamp(double timestamp);
+    double getTimestamp();
 
     void countVariation();
 
@@ -89,8 +90,8 @@ class cluster
   protected:
 
     long index;
-    double weight = 1;
-    long timestamp = 0;
+    double weight = 0;
+
 
     std::shared_ptr<sample> object;
     sample* representative;
