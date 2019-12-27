@@ -1,7 +1,6 @@
-#include <c++/clocale>
-#include <c++/iostream>
+#include <clocale>
+#include <iostream>
 #include <math.h>
-#include <qDebug>
 
 #include "cluster.h"
 
@@ -463,6 +462,64 @@ std::vector<double> cluster::getPredictionParameters()
   }
 
   return std::vector<double>({upperValue, lowerValue});
+}
+
+std::vector<double> cluster::getDjVector()
+{
+    if(subclusters.size() == 0) return _djVector;
+
+    double upperValue = 0;
+    double lowerValue = 0;
+
+    for(auto c : subclusters)
+    {
+      if(c->_djVector.size() == 0) continue;
+      upperValue += c->_djVector[0] * c->weight;
+      lowerValue += c->_djVector[1] * c->weight;
+    }
+
+    double w = getWeight();
+
+    if(w > 0){
+      upperValue /= w;
+      lowerValue /= w;
+    }
+
+    return std::vector<double>({upperValue, lowerValue});
+}
+
+std::vector<std::vector<double> > cluster::getDjMatrix()
+{
+    if(subclusters.size() == 0) return _matrixDj;
+
+    std::vector<std::vector<double>> matrix = {{0, 0}, {0,0}};
+
+    double clusterWeight = getWeight();
+
+    for(auto c : subclusters){
+        for(int i = 0; i < 2; ++i){
+            for(int j = 0; j < 2; ++j){
+                matrix[i][j] += c->_matrixDj[i][j] * c->getWeight() / clusterWeight;
+            }
+        }
+    }
+
+    return matrix;
+}
+
+int cluster::getPrognosisJ()
+{
+    if(subclusters.size() == 0) return _j;
+
+    double j = 0;
+
+    for(auto c : subclusters)
+        j += c->_j * c->weight;
+
+    double clusterWeight = getWeight();
+    if(clusterWeight > 0) j /= clusterWeight;
+
+    return (int) j;
 }
 
 void cluster::findMean()

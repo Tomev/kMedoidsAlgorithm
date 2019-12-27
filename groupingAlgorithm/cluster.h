@@ -1,7 +1,7 @@
 #ifndef K_MEDOIDALGORITHM_CLUSTER_H
 #define K_MEDOIDALGORITHM_CLUSTER_H
 
-#include <c++/vector>
+#include <vector>
 #include <string>
 #include <memory>
 
@@ -86,6 +86,9 @@ class cluster
     double getDeactualizationParameter();
     double getLastKDEValue();
     std::vector<double> getPredictionParameters();
+    std::vector<double> getDjVector();
+    std::vector<std::vector<double>> getDjMatrix();
+    int getPrognosisJ();
 
     std::string rowToSave = "";
 
