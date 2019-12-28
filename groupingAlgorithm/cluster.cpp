@@ -255,6 +255,9 @@ void cluster::updatePredictionParameters(double KDEValue)
   denominator =
       _matrixDj[0][0] * _matrixDj[1][1] - _matrixDj[1][0] * _matrixDj[0][1];
 
+  if(denominator < 1.0e-20)
+    std::cout << "ZERO DIVISION";
+
   upperValue =
       _matrixDj[1][1] * _djVector[0] - _matrixDj[0][1] * _djVector[1];
   upperValue /= denominator;
@@ -262,6 +265,9 @@ void cluster::updatePredictionParameters(double KDEValue)
   lowerValue =
       _matrixDj[0][0] * _djVector[1] - _matrixDj[1][0] * _djVector[0];
   lowerValue /= denominator;
+
+  if(isinf(lowerValue) || isinf(upperValue))
+    std::cout << "INF";
 
   /*
   // Limit case.
@@ -300,7 +306,15 @@ void cluster::updateDjMatrix()
   rightValue = _matrixDj[1][1] + j * j * deactualizationCoefficient;
   lowerRow = {leftValue, rightValue};
 
+  auto m = _matrixDj;
+
   _matrixDj = {upperRow, lowerRow};
+
+  double denominator =
+      _matrixDj[0][0] * _matrixDj[1][1] - _matrixDj[1][0] * _matrixDj[0][1];
+
+  if(denominator < 1.0e-20)
+    std::cout << "ZERO DIVISION";
 }
 
 void cluster::updatedjVector(double KDEValue)
@@ -315,6 +329,9 @@ void cluster::updateLastPrediction()
 {
   _lastPrediction = predictionParameters[0];
   _lastPrediction += predictionParameters[1] * _predictionsSteps;
+
+  if(isinf(_lastPrediction))
+    std::cout << "INF";
 }
 
 void cluster::updateDeactualizationParameter(double KDEValue)
@@ -495,8 +512,12 @@ std::vector<std::vector<double> > cluster::getDjMatrix()
     std::vector<std::vector<double>> matrix = {{0, 0}, {0,0}};
 
     double clusterWeight = getWeight();
+    if(clusterWeight < 1.0e-20) return { { 1, 0 }, { 0, 0 } };
 
     for(auto c : subclusters){
+
+      if(c->_matrixDj.size() == 0) return { { 1, 0 }, { 0, 0 } };
+
         for(int i = 0; i < 2; ++i){
             for(int j = 0; j < 2; ++j){
                 matrix[i][j] += c->_matrixDj[i][j] * c->getWeight() / clusterWeight;
