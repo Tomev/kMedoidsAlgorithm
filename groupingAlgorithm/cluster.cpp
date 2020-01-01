@@ -1,7 +1,7 @@
 #include <clocale>
 #include <iostream>
 #include <math.h>
-
+#include <QDebug>
 #include "cluster.h"
 
 cluster::cluster(){}
@@ -507,16 +507,31 @@ std::vector<double> cluster::getDjVector()
 
 std::vector<std::vector<double> > cluster::getDjMatrix()
 {
-    if(subclusters.size() == 0) return _matrixDj;
+    qDebug() << "Entering cluster " << index << ".";
+    qDebug() << "Check for subclusters.\n";
+
+    if(subclusters.size() == 0){
+        return _matrixDj;
+    }
 
     std::vector<std::vector<double>> matrix = {{0, 0}, {0,0}};
 
     double clusterWeight = getWeight();
+
+    qDebug() << "Weight check.\n";
+
     if(clusterWeight < 1.0e-20) return { { 1, 0 }, { 0, 0 } };
+
+    qDebug() << "Weight is " << clusterWeight;
+    qDebug() << "Entering for.\n";
 
     for(auto c : subclusters){
 
+      qDebug() << "Checking size of matrix of cluster " << c->index;
+
       if(c->_matrixDj.size() == 0) return { { 1, 0 }, { 0, 0 } };
+
+      qDebug() << "Size of matrix of cluster " << c->index << " is " << c->_matrixDj.size();
 
         for(int i = 0; i < 2; ++i){
             for(int j = 0; j < 2; ++j){
@@ -524,6 +539,8 @@ std::vector<std::vector<double> > cluster::getDjMatrix()
             }
         }
     }
+
+    qDebug() << "End for, returning from function.\n";
 
     return matrix;
 }
