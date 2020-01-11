@@ -25,6 +25,7 @@ cluster::cluster(long index, std::shared_ptr<sample> object, bool isMedoid) : in
 
 bool cluster::representsObject()
 {
+  //return subclusters.size() > 2;
   return object != nullptr;
 }
 
@@ -306,15 +307,10 @@ void cluster::updateDjMatrix()
   rightValue = _matrixDj[1][1] + j * j * deactualizationCoefficient;
   lowerRow = {leftValue, rightValue};
 
-  auto m = _matrixDj;
-
   _matrixDj = {upperRow, lowerRow};
 
   double denominator =
       _matrixDj[0][0] * _matrixDj[1][1] - _matrixDj[1][0] * _matrixDj[0][1];
-
-  if(denominator < 1.0e-20)
-    std::cout << "ZERO DIVISION";
 }
 
 void cluster::updatedjVector(double KDEValue)
@@ -490,7 +486,14 @@ std::vector<double> cluster::getDjVector()
 
     for(auto c : subclusters)
     {
-      if(c->_djVector.size() == 0) continue;
+      //if(c->_djVector.size() == 0) continue;
+      /*
+      if(subclusters.size() > 1){
+        qDebug() << "Weight: " << c->weight;
+        qDebug() << "Upper: " << c->_djVector[0];
+        qDebug() << "Lower: " << c->_djVector[1];
+      }
+      */
       upperValue += c->_djVector[0] * c->weight;
       lowerValue += c->_djVector[1] * c->weight;
     }
@@ -502,13 +505,21 @@ std::vector<double> cluster::getDjVector()
       lowerValue /= w;
     }
 
+    /*
+    if(subclusters.size() > 1){
+      qDebug() << "Weight: " << w;
+      qDebug() << "Upper: " << upperValue;
+      qDebug() << "Lower: " << lowerValue;
+    }
+    */
+
     return std::vector<double>({upperValue, lowerValue});
 }
 
 std::vector<std::vector<double> > cluster::getDjMatrix()
 {
-    qDebug() << "Entering cluster " << index << ".";
-    qDebug() << "Check for subclusters.\n";
+    //qDebug() << "Entering cluster " << index << ".";
+    //qDebug() << "Check for subclusters.\n";
 
     if(subclusters.size() == 0){
         return _matrixDj;
@@ -518,29 +529,41 @@ std::vector<std::vector<double> > cluster::getDjMatrix()
 
     double clusterWeight = getWeight();
 
-    qDebug() << "Weight check.\n";
+    //qDebug() << "Weight check.\n";
 
-    if(clusterWeight < 1.0e-20) return { { 1, 0 }, { 0, 0 } };
+    //if(clusterWeight < 1.0e-20) return { { 1, 0 }, { 0, 0 } };
 
-    qDebug() << "Weight is " << clusterWeight;
-    qDebug() << "Entering for.\n";
+    //qDebug() << "Weight is " << clusterWeight;
+    //qDebug() << "Entering for.\n";
 
     for(auto c : subclusters){
 
-      qDebug() << "Checking size of matrix of cluster " << c->index;
+      //qDebug() << "Checking size of matrix of cluster " << c->index;
 
-      if(c->_matrixDj.size() == 0) return { { 1, 0 }, { 0, 0 } };
+      //if(c->_matrixDj.size() == 0) return { { 1, 0 }, { 0, 0 } };
 
-      qDebug() << "Size of matrix of cluster " << c->index << " is " << c->_matrixDj.size();
+      //qDebug() << "Size of matrix of cluster " << c->index << " is " << c->_matrixDj.size();
 
-        for(int i = 0; i < 2; ++i){
-            for(int j = 0; j < 2; ++j){
-                matrix[i][j] += c->_matrixDj[i][j] * c->getWeight() / clusterWeight;
-            }
-        }
+      if(subclusters.size() > 1) qDebug() << "Weight: " << c->getWeight();
+
+      for(int i = 0; i < 2; ++i){
+          for(int j = 0; j < 2; ++j){
+              matrix[i][j] += c->_matrixDj[i][j] * c->getWeight() / clusterWeight;
+              if(subclusters.size() > 1)  qDebug() << c->_matrixDj[i][j];
+          }
+      }
     }
 
-    qDebug() << "End for, returning from function.\n";
+    if(subclusters.size() > 1){
+      qDebug() << "Summaric weight: " << clusterWeight;
+      for(int i = 0; i < 2; ++i){
+          for(int j = 0; j < 2; ++j){
+              qDebug() << matrix[i][j];
+          }
+      }
+    }
+
+    //qDebug() << "End for, returning from function.\n";
 
     return matrix;
 }
@@ -549,13 +572,29 @@ int cluster::getPrognosisJ()
 {
     if(subclusters.size() == 0) return _j;
 
+    //qDebug() << "Counting j";
+
     double j = 0;
 
-    for(auto c : subclusters)
+    for(auto c : subclusters){
         j += c->_j * c->weight;
+        /*
+        if(subclusters.size() > 1){
+          qDebug() << "Weight: " << c->weight;
+          qDebug() << "j: " << c->_j;
+        }
+        */
+    }
 
     double clusterWeight = getWeight();
     if(clusterWeight > 0) j /= clusterWeight;
+
+    /*
+    if(subclusters.size() > 1){
+      qDebug() << "Summaric weight: " << clusterWeight;
+      qDebug() << "Summaric j: " << (int) j;
+    }
+    */
 
     return (int) j;
 }
