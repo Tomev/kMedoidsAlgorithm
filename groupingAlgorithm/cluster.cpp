@@ -199,7 +199,9 @@ void cluster::findRepresentative()
 
 sample *cluster::getRepresentative()
 {
-  return representative;
+  findMean();
+  return mean.get();
+  //return representative;
 }
 
 void cluster::setTimestamp(double timestamp)
@@ -225,186 +227,50 @@ double cluster::getTimestamp()
   return ts;
 }
 
-void cluster::initializePredictionParameters(double KDEValue)
+void cluster::updatePrediction()
 {
-  predictionParameters =  { KDEValue, 0 };
-  _matrixDj = { { 1, 0 }, { 0, 0 } };
-  _djVector = { KDEValue, 0 };
-
-  if(_shouldUpdateDeactualizationParameter)
-    updatePredictionParameters(KDEValue);
-
-  updateLastPrediction();
+    ++_j;
+    updatePredictionMatrices();
+    updatePredictionParameters();
+    updateLastPrediction();
 }
 
-void cluster::updatePredictionParameters(double KDEValue)
+void cluster::updatePredictionMatrices()
 {
-  ++_j;
+    int j = _j - 1;
 
-  if(_shouldUpdateDeactualizationParameter)
-    updateDeactualizationParameter(KDEValue);
+    if(j == 0){ // Initialization
+        _matrixDj = {{1, 0}, {0, 0}};
+        _djVector = {_currentKDEValue, 0};
+    } else { // Update
+        double deactualizationCoefficient = pow(_deactualizationParameter, j);
+        _matrixDj[0][0] += deactualizationCoefficient;
+        _matrixDj[0][1] += -j * deactualizationCoefficient;
+        _matrixDj[1][0] += -j * deactualizationCoefficient;
+        _matrixDj[1][1] += j * j * deactualizationCoefficient;
 
-  if(_j == 1)
-    return;
-
-  double upperValue = 0, lowerValue = 0, denominator = 0;
-
-  // Finite case.
-  updateDjMatrix();
-  updatedjVector(KDEValue);
-
-  denominator =
-      _matrixDj[0][0] * _matrixDj[1][1] - _matrixDj[1][0] * _matrixDj[0][1];
-
-  if(denominator < 1.0e-20)
-    std::cout << "ZERO DIVISION";
-
-  upperValue =
-      _matrixDj[1][1] * _djVector[0] - _matrixDj[0][1] * _djVector[1];
-  upperValue /= denominator;
-
-  lowerValue =
-      _matrixDj[0][0] * _djVector[1] - _matrixDj[1][0] * _djVector[0];
-  lowerValue /= denominator;
-
-  if(isinf(lowerValue) || isinf(upperValue))
-    std::cout << "INF";
-
-  /*
-  // Limit case.
-  double predictionAndAcutalDifference =
-      (KDEValue - _lastPrediction);
-
-  upperValue = predictionParameters[0] + predictionParameters[1];
-  upperValue += (1.0 - pow(_deactualizationParameter, 2))
-      * predictionAndAcutalDifference;
-
-  lowerValue = predictionParameters[1];
-  lowerValue += pow(1.0 - _deactualizationParameter, 2)
-      * predictionAndAcutalDifference;
-  */
-
-  predictionParameters = { upperValue, lowerValue };
-
-  updateLastPrediction();
+        _djVector[1] = _deactualizationParameter * (_djVector[1] - _djVector[0]);
+        _djVector[0] = _deactualizationParameter * _djVector[0] + _currentKDEValue;
+    }
 }
 
-void cluster::updateDjMatrix()
+void cluster::updatePredictionParameters()
 {
-  double leftValue = 0, rightValue = 0;
-  std::vector<double> upperRow = {}, lowerRow = {};
-  int j = _j - 1;
-
-  double deactualizationCoefficient = pow(_deactualizationParameter, j);
-
-  // First upper row.
-  leftValue = _matrixDj[0][0] + deactualizationCoefficient;
-  rightValue = _matrixDj[0][1] - j * deactualizationCoefficient;
-  upperRow = {leftValue, rightValue};
-
-  // Then lower row.
-  leftValue = _matrixDj[1][0] - j * deactualizationCoefficient;
-  rightValue = _matrixDj[1][1] + j * j * deactualizationCoefficient;
-  lowerRow = {leftValue, rightValue};
-
-  _matrixDj = {upperRow, lowerRow};
-
-  double denominator =
-      _matrixDj[0][0] * _matrixDj[1][1] - _matrixDj[1][0] * _matrixDj[0][1];
-}
-
-void cluster::updatedjVector(double KDEValue)
-{
-  double upperValue = 0.0, lowerValue = 0.0;
-  upperValue = _deactualizationParameter * _djVector[0] + KDEValue;
-  lowerValue = _deactualizationParameter * (_djVector[1] - _djVector[0]);
-  _djVector = {upperValue, lowerValue};
+  if(_j == 1){ // Initialization
+    predictionParameters = {_currentKDEValue, 0};
+  } else { // Update
+    double denominator = _matrixDj[0][0] * _matrixDj[1][1] - _matrixDj[1][0] * _matrixDj[0][1];
+    predictionParameters[0] = (_matrixDj[1][1] * _djVector[0] - _matrixDj[0][1] * _djVector[1]) / denominator;
+    predictionParameters[1] = (_matrixDj[0][0] * _djVector[1] - _matrixDj[1][0] * _djVector[0]) / denominator;
+  }
 }
 
 void cluster::updateLastPrediction()
 {
   _lastPrediction = predictionParameters[0];
   _lastPrediction += predictionParameters[1] * _predictionsSteps;
-
-  if(isinf(_lastPrediction))
-    std::cout << "INF";
 }
 
-void cluster::updateDeactualizationParameter(double KDEValue)
-{
-  if(_j == 1)
-  {
-    _tildedZ = 1;
-    _doubleTildedZ = 10;
-    _deactualizationParameter = 0.9;
-    rowToSave = std::to_string(KDEValue) + ",-,0,1,10,0.1,0.9\n";
-    return;
-  }
-
-  double eParameter = _lastPrediction - KDEValue;
-
-  //if(_j == 1) _doubleTildedZ = fabs(eParameter);
-
-  //qDebug() << "y_s = " << _lastPrediction;
-  //qDebug() << "y = " << KDEValue;
-
-  _doubleTildedZ = (1.0 - _uPredictionParameter) * fabs(eParameter) +
-      _uPredictionParameter * _doubleTildedZ;
-  _tildedZ = (1.0 - _uPredictionParameter) * eParameter +
-      _uPredictionParameter * _tildedZ;
-
-  if(_doubleTildedZ < 1e-20)
-  {
-    //qDebug() << "dtilded z is low: " << _doubleTildedZ;
-    _deactualizationParameter = 1.0;
-    return;
-  }
-
-  //qDebug() << "e = " << eParameter;
-  //qDebug() << "~~z = " << _doubleTildedZ;
-  //qDebug() << "~z = " << _tildedZ;
-
-  double zj = fabs(_tildedZ / _doubleTildedZ);
-  //qDebug() << "z = " << zj;
-
-  _deactualizationParameter = 1.0 - zj;
-
-  rowToSave = std::to_string(KDEValue) + ",";
-  rowToSave += std::to_string(_lastPrediction) + ",";
-  rowToSave += std::to_string(eParameter) + ",";
-  rowToSave += std::to_string(_tildedZ) + ",";
-  rowToSave += std::to_string(_doubleTildedZ) + ",";
-  rowToSave += std::to_string(zj) + ",";
-  rowToSave += std::to_string(_deactualizationParameter) + "\n";
-}
-
-double cluster::getTildedZ()
-{
-  if(representsObject()) return _tildedZ;
-
-  double averageTildedZ = 0;
-
-  for(auto c : subclusters)
-    averageTildedZ += c->_tildedZ * c->weight;
-
-  averageTildedZ /= getWeight();
-
-  return averageTildedZ;
-}
-
-double cluster::getDoubleTildedZ()
-{
-  if(representsObject()) return _doubleTildedZ;
-
-  double averageDoubleTildedZ = 0;
-
-  for(auto c : subclusters)
-    averageDoubleTildedZ += c->_doubleTildedZ * c->weight;
-
-  averageDoubleTildedZ /= getWeight();
-
-  return averageDoubleTildedZ;
-}
 
 double cluster::getLastPrediction()
 {
@@ -436,22 +302,6 @@ double cluster::getDeactualizationParameter()
     averageDeactualizationParameter /= w;
 
   return averageDeactualizationParameter;
-}
-
-double cluster::getLastKDEValue()
-{
-  if(representsObject()) return  _lastKDEValue;
-
-  double averageLastKDEValue = 0;
-
-  for(auto c : subclusters)
-    averageLastKDEValue += c->_lastKDEValue * c->weight;
-
-  double w = getWeight();
-  if(w > 0)
-    averageLastKDEValue /= w;
-
-  return averageLastKDEValue;
 }
 
 std::vector<double> cluster::getPredictionParameters()
@@ -486,14 +336,6 @@ std::vector<double> cluster::getDjVector()
 
     for(auto c : subclusters)
     {
-      //if(c->_djVector.size() == 0) continue;
-      /*
-      if(subclusters.size() > 1){
-        qDebug() << "Weight: " << c->weight;
-        qDebug() << "Upper: " << c->_djVector[0];
-        qDebug() << "Lower: " << c->_djVector[1];
-      }
-      */
       upperValue += c->_djVector[0] * c->weight;
       lowerValue += c->_djVector[1] * c->weight;
     }
@@ -505,22 +347,11 @@ std::vector<double> cluster::getDjVector()
       lowerValue /= w;
     }
 
-    /*
-    if(subclusters.size() > 1){
-      qDebug() << "Weight: " << w;
-      qDebug() << "Upper: " << upperValue;
-      qDebug() << "Lower: " << lowerValue;
-    }
-    */
-
     return std::vector<double>({upperValue, lowerValue});
 }
 
 std::vector<std::vector<double> > cluster::getDjMatrix()
 {
-    //qDebug() << "Entering cluster " << index << ".";
-    //qDebug() << "Check for subclusters.\n";
-
     if(subclusters.size() == 0){
         return _matrixDj;
     }
@@ -529,41 +360,13 @@ std::vector<std::vector<double> > cluster::getDjMatrix()
 
     double clusterWeight = getWeight();
 
-    //qDebug() << "Weight check.\n";
-
-    //if(clusterWeight < 1.0e-20) return { { 1, 0 }, { 0, 0 } };
-
-    //qDebug() << "Weight is " << clusterWeight;
-    //qDebug() << "Entering for.\n";
-
     for(auto c : subclusters){
-
-      //qDebug() << "Checking size of matrix of cluster " << c->index;
-
-      //if(c->_matrixDj.size() == 0) return { { 1, 0 }, { 0, 0 } };
-
-      //qDebug() << "Size of matrix of cluster " << c->index << " is " << c->_matrixDj.size();
-
-      if(subclusters.size() > 1) qDebug() << "Weight: " << c->getWeight();
-
       for(int i = 0; i < 2; ++i){
           for(int j = 0; j < 2; ++j){
               matrix[i][j] += c->_matrixDj[i][j] * c->getWeight() / clusterWeight;
-              if(subclusters.size() > 1)  qDebug() << c->_matrixDj[i][j];
           }
       }
     }
-
-    if(subclusters.size() > 1){
-      qDebug() << "Summaric weight: " << clusterWeight;
-      for(int i = 0; i < 2; ++i){
-          for(int j = 0; j < 2; ++j){
-              qDebug() << matrix[i][j];
-          }
-      }
-    }
-
-    //qDebug() << "End for, returning from function.\n";
 
     return matrix;
 }
@@ -572,29 +375,11 @@ int cluster::getPrognosisJ()
 {
     if(subclusters.size() == 0) return _j;
 
-    //qDebug() << "Counting j";
-
     double j = 0;
 
-    for(auto c : subclusters){
-        j += c->_j * c->weight;
-        /*
-        if(subclusters.size() > 1){
-          qDebug() << "Weight: " << c->weight;
-          qDebug() << "j: " << c->_j;
-        }
-        */
-    }
+    for(auto c : subclusters) j += c->_j * c->weight;
 
-    double clusterWeight = getWeight();
-    if(clusterWeight > 0) j /= clusterWeight;
-
-    /*
-    if(subclusters.size() > 1){
-      qDebug() << "Summaric weight: " << clusterWeight;
-      qDebug() << "Summaric j: " << (int) j;
-    }
-    */
+    j /= getWeight();
 
     return (int) j;
 }
@@ -607,7 +392,7 @@ void cluster::findMean()
 
 void cluster::findMeanFromSubclusters()
 {
-  double currentClusterWeight = 0.0f;
+  double currentClusterWeight = 0;
   std::shared_ptr<sample> currentObject;
 
   std::unordered_map<std::string, double> numericAttributesData;

@@ -55,8 +55,6 @@ class cluster
 
     void countVariation();
 
-    long positiveTemporalDerivativeTimesInARow = 0;
-
     // Prediction
     std::vector<double> predictionParameters;
     double _deactualizationParameter = 0.99; // w_a
@@ -64,24 +62,14 @@ class cluster
     int _j = 0;
     std::vector<std::vector<double>> _matrixDj = {};
     std::vector<double>_djVector = {};
-    bool _shouldUpdateDeactualizationParameter = false;
-    double _tildedZ = 0;
-    double _doubleTildedZ = 0;
+
     double _uPredictionParameter = 0.95;
     double _lastPrediction = 0;
-    double _lastKDEValue = 0;
     double _currentKDEValue = 0;
-    double _KDEDerivativeValue = 0;
 
-    void initializePredictionParameters(double KDEValue);
-    void updatePredictionParameters(double KDEValue);
-    void updateDjMatrix();
-    void updatedjVector(double KDEValue);
-    void updateLastPrediction();
-    void updateDeactualizationParameter(double KDEValue);
+    // Prediction rewritten
+    void updatePrediction();
 
-    double getTildedZ();
-    double getDoubleTildedZ();
     double getLastPrediction();
     double getDeactualizationParameter();
     double getLastKDEValue();
@@ -90,14 +78,11 @@ class cluster
     std::vector<std::vector<double>> getDjMatrix();
     int getPrognosisJ();
 
-    std::string rowToSave = "";
-
   protected:
 
     long index;
     double weight = 0; // p_i from 6 spraw e-mail
     double _computationWeight = 0; // w_i from 6 spraw e-mail
-
 
     std::shared_ptr<sample> object;
     sample* representative;
@@ -112,6 +97,11 @@ class cluster
       void findMeanFromSubclusters();
 
     void findVariation();
+
+    // Prediction
+    void updatePredictionMatrices();
+    void updatePredictionParameters();
+    void updateLastPrediction();
 
 };
 
