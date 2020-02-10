@@ -99,8 +99,12 @@ class cluster
     void findVariation();
 
     // Prediction
-    void updatePredictionMatrices();
-    void updatePredictionParameters();
+    void updateFinitePrediction();
+    void updateInfinitePrediction();
+    void updateFinitePredictionMatrices();
+    void updateFinitePredictionParameters();
+    void updateInfinitePredictionMatrices();
+    void updateInfinitePredictionParameters();
     void updateLastPrediction();
 
 };

@@ -230,17 +230,30 @@ double cluster::getTimestamp()
 void cluster::updatePrediction()
 {
     ++_j;
-    updatePredictionMatrices();
-    updatePredictionParameters();
+    //updateFinitePrediction();
+    updateInfinitePrediction();
     updateLastPrediction();
 }
 
-void cluster::updatePredictionMatrices()
+void cluster::updateFinitePrediction()
+{
+  updateFinitePredictionMatrices();
+  updateFinitePredictionParameters();
+}
+
+void cluster::updateInfinitePrediction()
+{
+  updateInfinitePredictionMatrices();
+  updateInfinitePredictionParameters();
+}
+
+
+void cluster::updateFinitePredictionMatrices()
 {
     int j = _j - 1;
 
     if(j == 0){ // Initialization
-        _matrixDj = {{1, 0}, {0, 0}};
+        _matrixDj = {{1, 0}, {0, 0}}; // Finite case
         _djVector = {_currentKDEValue, 0};
     } else { // Update
         double deactualizationCoefficient = pow(_deactualizationParameter, j);
@@ -254,7 +267,7 @@ void cluster::updatePredictionMatrices()
     }
 }
 
-void cluster::updatePredictionParameters()
+void cluster::updateFinitePredictionParameters()
 {
   if(_j == 1){ // Initialization
     predictionParameters = {_currentKDEValue, 0};
@@ -490,4 +503,30 @@ void cluster::findVariation()
 
   for(auto kv : variation)
     kv.second *= varCoefficient;
+}
+
+void cluster::updateInfinitePredictionMatrices()
+{
+  int j = _j - 1;
+
+  if(j == 0){ // Initialization
+      _djVector = {_currentKDEValue, 0};
+  } else { // Update
+      _djVector[1] = _deactualizationParameter * (_djVector[1] - _djVector[0]);
+      _djVector[0] = _deactualizationParameter * _djVector[0] + _currentKDEValue;
+  }
+}
+
+void cluster::updateInfinitePredictionParameters()
+{
+  int j = _j - 1;
+
+  if(j == 0){
+      predictionParameters = {_currentKDEValue, 0};
+  } else {
+    double predictionDifference = _currentKDEValue - _lastPrediction;
+    predictionParameters[0] += predictionParameters[1];
+    predictionParameters[0] += (1 - pow(_deactualizationParameter, 2)) * predictionDifference;
+    predictionParameters[1] += pow(1 - _deactualizationParameter, 2) * predictionDifference;
+  }
 }
