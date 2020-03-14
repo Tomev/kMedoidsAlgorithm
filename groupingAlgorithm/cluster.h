@@ -72,7 +72,6 @@ class cluster
 
     double getLastPrediction();
     double getDeactualizationParameter();
-    double getLastKDEValue();
     std::vector<double> getPredictionParameters();
     std::vector<double> getDjVector();
     std::vector<std::vector<double>> getDjMatrix();
