@@ -66,6 +66,7 @@ class cluster
     double _uPredictionParameter = 0.95;
     double _lastPrediction = 0;
     double _currentKDEValue = 0;
+    double _currentDerivativeValue = 0;
 
     // Prediction rewritten
     void updatePrediction();
