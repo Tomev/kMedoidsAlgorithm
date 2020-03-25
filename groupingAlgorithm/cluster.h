@@ -57,7 +57,6 @@ class cluster
 
     // Prediction
     std::vector<double> predictionParameters;
-    double _deactualizationParameter = 0.999; // w_a -- w, since first article
     int _predictionsSteps = 1;
     int _j = 0;
     std::vector<std::vector<double>> _matrixDj = {};
@@ -70,6 +69,7 @@ class cluster
 
     // Prediction rewritten
     void updatePrediction();
+    static double _deactualizationParameter; // w_a -- w, since first article
 
     double getLastPrediction();
     double getDeactualizationParameter();
