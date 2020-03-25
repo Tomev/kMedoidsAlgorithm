@@ -4,6 +4,8 @@
 #include <QDebug>
 #include "cluster.h"
 
+double cluster::_deactualizationParameter = 0.999;
+
 cluster::cluster(){}
 
 cluster::cluster(long index) : index(index) {}
