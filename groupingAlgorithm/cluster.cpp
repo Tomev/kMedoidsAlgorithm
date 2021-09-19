@@ -289,7 +289,7 @@ void cluster::updateLastPrediction()
 
 double cluster::getLastPrediction()
 {
-  if(representsObject()) return _lastPrediction;
+  if(representsObject() || index == -1) return _lastPrediction;
 
   double averageLastPrediction = 0;
 
